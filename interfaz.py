@@ -10,17 +10,19 @@ multiplFactor = 0.8 / 1.25 #(.8 / 1.25, resolucion de 1229 x 691)
 windowCaption = "Proyecto SV - Simulador de Pista"
 
 #Constantes de pista
-pathWidth = 50
+pathWidth = 55
 
 #Colores
 black = (0, 0, 0)
 lightBlue = (183,255,247)
 green = (0, 180, 65)
 lightGrey = (150, 150, 150)
+red = (255, 0, 0)
 
 bgColor = green # For the background color of your window
 streetColor = black
 sidewalkColor = lightGrey
+carColor = red
 
 #Puntos del circuito con coordenadas predefinidas
 points = ((238, 69),   (505, 69),  (99, 143),   (238, 143),
@@ -61,6 +63,8 @@ screen = pg.display.set_mode((width, height)) # Making of the screen
 pg.display.set_caption(windowCaption) # Name for the window
 screen.fill(bgColor) #This syntax fills the background colour
 
+#Instancia del carro
+car = Car(circuit, screen, carColor, (pathWidth - 24) / 2, 0.2)
 
 #Loop para ventana
 running = True
@@ -77,8 +81,8 @@ while running:
 
     #Se dibujan las lineas del circuito
     for line in circuit.getLines():
-        point1 = [line[0][0], line[0][1]]
-        point2 = [line[1][0], line[1][1]]
+        point1 = [line[0]['x'], line[0]['y']]
+        point2 = [line[1]['x'], line[1]['y']]
 
         #Se cambia largo para que esquinas de caminos coincidan
         if point1[0] == point2[0]: #Linea vertical
@@ -100,6 +104,9 @@ while running:
                 point2[0] += pathWidth / 2
 
         pg.draw.line(screen, streetColor, point1, point2, pathWidth)
+
+    #Se mueve carro
+    car.move()
 
     #Actualiza ventana
     pg.display.flip()
