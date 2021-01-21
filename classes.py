@@ -5,7 +5,7 @@ class ProgramStatus():
     def __init__(self):
         self.canContinue = False
         self.idleCar = False
-        self.intVarCmd = None
+        self.intVarCmd = None #prueba
 
         self.commandsByNum = {0: "N/A",
                               1: "Gira a la derecha y acelera",
@@ -25,6 +25,11 @@ class ProgramStatus():
 
         self.nextCommandNum = 0
         self.nextCommand = "N/A"
+
+        self.clock = None #Tipo pygame.time.Clock
+        self.stopTime = 0 #entero, milisegundos
+        self.timeLeft = 0 #en segundos
+        self.framerate = 60 #frames p sec
 
 
         # PRUEBAS----------------------------
@@ -52,6 +57,7 @@ class ProgramStatus():
             self.nextCommandNum = 0
             self.nextCommand = self.commandsByNum[number]
             self.intVarCmd.set(0)
+
 
 
 
