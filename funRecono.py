@@ -1,12 +1,10 @@
 import cv2
 import numpy as np
-from skimage.io import imread
-import matplotlib.pyplot as plt
+
 
 
 
 def signo(img,maskc,cont):
-    count = 0
     maskc = np.zeros(img.shape, dtype=np.uint8)
     cv2.drawContours(maskc, cont, 0, (255, 255, 255), cv2.FILLED)
     maskc = cv2.cvtColor(maskc, cv2.COLOR_RGB2GRAY)
@@ -36,9 +34,7 @@ def signo(img,maskc,cont):
 
 
 def recono(img):
-
     comando = 0
-    comando2 = 0
     alto,bajo,_ = img.shape
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     lower_ora = np.array([70, 220, 220])
@@ -56,31 +52,33 @@ def recono(img):
         approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)
         if len(approx) == 3:
             valido,com2 = signo(img,maskora,[approx])
+            comando = 2
             if valido == 1:
-                comando = 2
-                comando2 = com2
+                comando = com2
+
                 
         if len(approx) == 4:
             valido,com2 = signo(img,maskora,[approx])
+            comando = 1
             if valido == 1:
-                comando = 1
-                comando2 = com2
+                comando = com2
                 
     for cnt in contblu:
         approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)
         if len(approx) == 3:
-            valido,com2 = signo(img,maskora,[approx])
+            valido,com2 = signo(img,maskblu,[approx])
+            comando = 4
             if valido == 1:
-                comando = 4
-                comando2 = com2
+                comando = com2
                 
         if len(approx) == 4:
-            valido,com2 = signo(img,maskora,[approx])
+            valido,com2 = signo(img,maskblu,[approx])
+            comando = 3
             if valido == 1:
-                comando = 3
-                comando2 = com2
-
-    return comando,comando2
+                comando = com2
+    
+    
+    return comando
 
 # commandsByNum = {0: "N/A",
 #                 1: "Gira a la derecha y acelera",
