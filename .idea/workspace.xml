@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e1688837-b82a-4944-9c6e-a11b3d65c5b7" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Archivos temporales/pruebaSalPimienta.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Archivos temporales/Pista.pdn" beforeDir="false" afterPath="$PROJECT_DIR$/Archivos temporales/Pista.pdn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/classes.py" beforeDir="false" afterPath="$PROJECT_DIR$/classes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/funRecono.py" beforeDir="false" afterPath="$PROJECT_DIR$/funRecono.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/interface.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +36,7 @@
       <recent name="D:\OneDrive - Estudiantes ITCR\Documentos\TEC\2020 - 2S\Sistemas de Visión Gr. 1\Proyecto\ASV-PF-SGAV\Archivos temporales" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.interface">
+  <component name="RunManager" selected="Python.pruebaSalPimienta">
     <configuration name="funRecono" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ASV-PF-SGAV" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -103,19 +100,19 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="pygamePrueba" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="ASV-PF-SGAV" />
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Proyecto" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Archivos temporales" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../Inteligencia Artificial Gr. 1/Proyecto/Proyecto" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Archivos temporales/pygamePrueba.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../../Inteligencia Artificial Gr. 1/Proyecto/Proyecto/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -124,7 +121,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="threadingTest" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="pruebaSalPimienta" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ASV-PF-SGAV" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -136,7 +133,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Archivos temporales/threadingTest.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Archivos temporales/pruebaSalPimienta.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -147,11 +144,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.pruebaSalPimienta" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.interface" />
         <item itemvalue="Python.funRecono" />
         <item itemvalue="Python.interface (1)" />
-        <item itemvalue="Python.pygamePrueba" />
-        <item itemvalue="Python.threadingTest" />
       </list>
     </recent_temporary>
   </component>
