@@ -2,16 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e1688837-b82a-4944-9c6e-a11b3d65c5b7" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Archivos temporales/Codificacion.pdn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Archivos temporales/Codificacion.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Archivos temporales/videocaptureTest.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Interfaz original/classes.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Interfaz original/graphicsClasses.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Interfaz original/interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ASV-PF-SGAV.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ASV-PF-SGAV.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Archivos temporales/Pista.pdn" beforeDir="false" afterPath="$PROJECT_DIR$/Archivos temporales/Pista.pdn" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/classes.py" beforeDir="false" afterPath="$PROJECT_DIR$/classes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/funRecono.py" beforeDir="false" afterPath="$PROJECT_DIR$/funRecono.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/interface.py" afterDir="false" />
@@ -40,14 +32,14 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/Archivos temporales" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+    <property name="settings.editor.selected.configurable" value="preferences.fileTypes" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\OneDrive - Estudiantes ITCR\Documentos\TEC\2020 - 2S\Sistemas de Visión Gr. 1\Proyecto\ASV-PF-SGAV\Archivos temporales" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.funRecono">
+  <component name="RunManager" selected="Python.interface">
     <configuration name="funRecono" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ASV-PF-SGAV" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -155,9 +147,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.interface" />
         <item itemvalue="Python.funRecono" />
         <item itemvalue="Python.interface (1)" />
-        <item itemvalue="Python.interface" />
         <item itemvalue="Python.pygamePrueba" />
         <item itemvalue="Python.threadingTest" />
       </list>

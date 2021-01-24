@@ -4,7 +4,8 @@ class ProgramStatus():
     #Metodo constructor
     def __init__(self):
         self.idleCar = False
-        self.intVarCmd = None #prueba
+        self.currImage = None
+        self.running = True
 
         self.commandsByNum = {0: "N/A",
                               1: "Gira a la derecha y acelera",
@@ -31,12 +32,6 @@ class ProgramStatus():
         self.framerate = 60 #frames p sec
 
 
-        # PRUEBAS----------------------------
-        self.entry = None
-        self.label = None
-
-        # ------------------------------------
-
     #Metodo para cambiar el comando en algunas variables de la instancia
     #El numero number puede ser:
     # 0: N/A
@@ -55,7 +50,6 @@ class ProgramStatus():
         else:
             self.nextCommandNum = 0
             self.nextCommand = self.commandsByNum[number]
-            self.intVarCmd.set(0)
 
 
 

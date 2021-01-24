@@ -2,6 +2,8 @@
 import pygame as pg
 import pygame.freetype as ft
 import threading as th
+import cv2
+import numpy as np
 
 # Importacion de modulos propios --------------------------------------------------------------------------
 from graphicsClasses import *
@@ -90,15 +92,14 @@ def main():
     car = Car(circuit, screen, status, carColor, (pathWidth - 24) / 2, speed)
 
     # Loop para ventana
-    running = True
-    while running:
+    while status.running:
         # Condicion para terminar programa y ventana grafica
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                running = False
+                status.running = False
                 break
 
-        if not running:
+        if not status.running:
             pg.quit()
             break
 
@@ -151,15 +152,35 @@ def main():
         screen.blit(text_surface2, (600, 70))
 
         # Texto de cuadros por segundo
-        text_surface2, rect2 = gameFont.render("FPS: " + str(round(fpsShown, 1)), textColor)
-        screen.blit(text_surface2, (1000, 40))
+        text_surface3, rect2 = gameFont.render("FPS: " + str(round(fpsShown, 1)), textColor)
+        screen.blit(text_surface3, (1000, 40))
 
         # Texto de temporizador
-        text_surface2, rect2 = gameFont.render("Reloj: " + str(status.timeLeft) + " s", textColor)
-        screen.blit(text_surface2, (1000, 70))
+        text_surface4, rect2 = gameFont.render("Reloj: " + str(status.timeLeft) + " s", textColor)
+        screen.blit(text_surface4, (1000, 70))
 
         # Se mueve carro
         car.move()
+
+        #Ver el feed de la camara
+        # https://www.geeksforgeeks.org/python-display-images-with-pygame/
+        # copying the image surface object
+        # to the display surface object
+        dim = (279, 209)
+
+        rect = pg.Rect((54 - 4, 450 - 4), (dim[0] + 8, dim[1] + 8))
+        pg.draw.rect(screen, black, rect)
+
+        if type(status.currImage) == np.ndarray:
+            resized = cv2.resize(status.currImage, dim, interpolation = cv2.INTER_AREA)
+
+            # https://note.nkmk.me/en/python-opencv-bgr-rgb-cvtcolor/
+            resized = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
+
+            # https://stackoverflow.com/questions/30818367/how-to-present-numpy-array-into-pygame-surface
+            resized = np.swapaxes(resized, 0, 1)
+            newSurface = pg.pixelcopy.make_surface(resized)
+            screen.blit(newSurface, (54, 450))
 
         # Actualiza ventana
         pg.display.flip()
@@ -167,48 +188,20 @@ def main():
         clock.tick(status.framerate)
 
 
-# PRUEBAS -----------------------------------------------------------------------------------------
 # Algoritmo que se encarga de reconocer patrones en imagenes de la camara
 def patternRecognition():
 
-
-
-    status.intVarCmd = tk.IntVar()
-
-    gdaR = tk.Radiobutton(f2, text="Gira a la derecha y acelera", variable=status.intVarCmd, value=1,
-                          command=transmitMessage)
-    giaR = tk.Radiobutton(f2, text="Gira a la izquierda y acelera", variable=status.intVarCmd, value=2,
-                          command=transmitMessage)
-    gddR = tk.Radiobutton(f2, text="Gira a la derecha y desacelera", variable=status.intVarCmd, value=3,
-                          command=transmitMessage)
-    gidR = tk.Radiobutton(f2, text="Gira a la izquierda y desacelera", variable=status.intVarCmd, value=4,
-                          command=transmitMessage)
-    detR = tk.Radiobutton(f2, text="Detención", variable=status.intVarCmd, value=5, command=transmitMessage)
-    plyR = tk.Radiobutton(f2, text="Puesta en marcha", variable=status.intVarCmd, value=6, command=transmitMessage)
-
-    status.intVarCmd.set(0)
-    gdaR.deselect()
-    giaR.deselect()
-    gddR.deselect()
-    gidR.deselect()
-    detR.deselect()
-    plyR.deselect()
-
-    tk.mainloop()
-
-
-def transmitMessage():
-    status.changeNextCmd(status.intVarCmd.get())
-
-
-# --------------------------------------------------------------------------------------------------
+    #Camera
+    camera(status) #Esta dentro de un loop
 
 
 if __name__ == "__main__":
     status = ProgramStatus()
 
     # https://realpython.com/intro-to-python-threading/
-    #th.Thread(target=main).start()
+    th.Thread(target=main).start()
+
+
 
     patternRecognition()
 
