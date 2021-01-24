@@ -1,12 +1,12 @@
 # Importacion de bibliotecas ----------------------------------------------------------------------
 import pygame as pg
 import pygame.freetype as ft
+import tkinter as tk
 import threading as th
 
 # Importacion de modulos propios --------------------------------------------------------------------------
 from graphicsClasses import *
 from classes import *
-from funRecono import *
 
 # Constantes -----------------------------------------------------------------------------------------
 
@@ -89,6 +89,8 @@ def main():
     # Instancia del carro
     car = Car(circuit, screen, status, carColor, (pathWidth - 24) / 2, speed)
 
+
+
     # Loop para ventana
     running = True
     while running:
@@ -168,10 +170,15 @@ def main():
 
 
 # PRUEBAS -----------------------------------------------------------------------------------------
-# Algoritmo que se encarga de reconocer patrones en imagenes de la camara
-def patternRecognition():
-
-
+# Ventana con varias opciones para accion en siguiente interseccion
+def interfaz():
+    root = tk.Tk()
+    root.geometry("250x250")
+    f = tk.Frame(root)
+    f.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+    tk.Label(f, text="Ingrese opción:").pack()
+    f2 = tk.Frame(f)
+    f2.pack()
 
     status.intVarCmd = tk.IntVar()
 
@@ -194,6 +201,13 @@ def patternRecognition():
     detR.deselect()
     plyR.deselect()
 
+    gdaR.grid(row=1, sticky="W")
+    giaR.grid(row=2, sticky="W")
+    gddR.grid(row=3, sticky="W")
+    gidR.grid(row=4, sticky="W")
+    detR.grid(row=5, sticky="W")
+    plyR.grid(row=6, sticky="W")
+
     tk.mainloop()
 
 
@@ -208,8 +222,8 @@ if __name__ == "__main__":
     status = ProgramStatus()
 
     # https://realpython.com/intro-to-python-threading/
-    #th.Thread(target=main).start()
+    th.Thread(target=main).start()
 
-    patternRecognition()
+    interfaz()
 
 

@@ -3,6 +3,7 @@ class ProgramStatus():
 
     #Metodo constructor
     def __init__(self):
+        self.canContinue = False
         self.idleCar = False
         self.intVarCmd = None #prueba
 

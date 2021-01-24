@@ -5,6 +5,9 @@ La versión de Python que se usó es 3.8.6, 64 bits
 
 Las bibliotecas que se requieren son:
 -pygame
+-threading
+-cv2
+-numpy
 
 Si no se tienen, se puede escribir en consola (command prompt, Windows 10):
 
