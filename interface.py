@@ -162,7 +162,7 @@ def main():
         # Se mueve carro
         car.move()
 
-        #Ver el feed de la camara
+        #Ver el feed de la camara en el interfaz
         # https://www.geeksforgeeks.org/python-display-images-with-pygame/
         # copying the image surface object
         # to the display surface object
@@ -185,23 +185,23 @@ def main():
         # Actualiza ventana
         pg.display.flip()
 
+        #Interfaz avanza a una frecuencia de framerate
         clock.tick(status.framerate)
 
 
 # Algoritmo que se encarga de reconocer patrones en imagenes de la camara
 def patternRecognition():
 
-    #Camera
+    #Camara, esta funcion llama al algoritmo de reconocimiento de comandos
     camera(status) #Esta dentro de un loop
 
-
 if __name__ == "__main__":
+    #Clase usada como memoria que todos los programas comparten
     status = ProgramStatus()
 
+    #Thread de main para correr programas en paralelo
     # https://realpython.com/intro-to-python-threading/
     th.Thread(target=main).start()
-
-
 
     patternRecognition()
 

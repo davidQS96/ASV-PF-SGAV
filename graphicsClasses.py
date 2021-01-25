@@ -440,7 +440,7 @@ class Car:
 
             self.atIntersectionMoveTo(direction)
 
-        self.prgmStatus.changeNextCmd(0)  # Se reinicia el comando y vuelve al inicial
+        self.prgmStatus.resetCmdNumber()  # Se reinicia el comando y vuelve al inicial
         return
 
     # Calculo de movimiento en interseccion donde se desea mover a la izquierda (90deg cw) o derecha (90deg ccw)

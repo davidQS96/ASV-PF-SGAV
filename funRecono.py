@@ -1,9 +1,6 @@
 import cv2
 import numpy as np
 
-
-
-
 def signo(img,maskc,cont):
     maskc = np.zeros(img.shape, dtype=np.uint8)
     cv2.drawContours(maskc, cont, 0, (255, 255, 255), cv2.FILLED)
@@ -132,8 +129,7 @@ def camera(status):
 
         command = recono(frame)
 
-        status.changeNextCmd(command[0])
-        print(status.nextCommand)
+        status.changeNextCmd(command)
 
         # the 'q' button is set as the
         # quitting button you may use any
