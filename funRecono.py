@@ -37,11 +37,11 @@ def recono(img):
     comando = 0
     alto,bajo,_ = img.shape
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    lower_ora = np.array([70, 220, 220])
+    lower_ora = np.array([70, 100, 160])
     upper_ora = np.array([110,255,255])
     maskora = cv2.inRange(hsv,lower_ora,upper_ora)
     
-    lower_blu = np.array([30, 220, 220])
+    lower_blu = np.array([30, 150, 120])
     upper_blu = np.array([50,255,255])
     maskblu = cv2.inRange(hsv,lower_blu,upper_blu)  
     
