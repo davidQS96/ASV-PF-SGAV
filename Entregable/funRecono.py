@@ -1,19 +1,24 @@
 import cv2
 import numpy as np
 
+
+# Función de detección de signo
 def signo(contorno):
+    # Variables
     valido = 0
     comando2 = 0
-
+    # Reconocimento de figuras
     for cnt in contorno:
+        # Detección de figuras
         approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)
         area = cv2.contourArea(cnt)
+        # Detección de signo de resta
         if len(approx) == 4:
             if area < 20000 and area > 100:
                 valido = 1
                 comando2 = 6
 
-
+        # Detección de signo de suma
         if len(approx) == 12:
             if area < 20000 and area > 100:
                 valido = 1
@@ -22,13 +27,16 @@ def signo(contorno):
 
     return  valido,comando2
 
-
+# Reconocimiento de instrucciones
 def recono(img):
+    # Variable del sistema
     comando = 0
     alto,bajo,_ = img.shape
     tarea = alto*bajo
     slimite = tarea*0.15
     ilimite = tarea*0.02
+    
+    #Mascaras para color naranja y turqueza
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     lower_ora = np.array([70, 100, 160])
     upper_ora = np.array([110,255,255])
@@ -41,11 +49,14 @@ def recono(img):
     contora, _ = cv2.findContours(maskora, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contblu, _ = cv2.findContours(maskblu, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
+    
+    # Busqueda de figuras de color naranja
     for cnt in contora:
         
         approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)
         area = cv2.contourArea(cnt)
         
+        # Clasificación de figuras en triangulo o rectangulo
         if area < slimite and area > ilimite:
             if len(approx) == 3:
                 valido,com2 = signo(contora)
@@ -60,12 +71,14 @@ def recono(img):
                 comando = 1
                 if valido == 1:
                     comando = com2
-                
+                    
+    # Busqueda de figuras de color turqueza      
     for cnt in contblu:
 
         approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)
         area = cv2.contourArea(cnt)
         
+        # Clasificación de figuras en triangulo o rectangulo
         if area < slimite and area > ilimite:
             
             if len(approx) == 3:
