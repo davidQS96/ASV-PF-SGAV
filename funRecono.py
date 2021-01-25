@@ -128,9 +128,10 @@ def camera(status):
         # Display the resulting frame
         # cv2.imshow('frame', frame)
 
-        command = recono(frame)
+        if ret == True:
+            command = recono(frame)
 
-        status.changeNextCmd(command)
+            status.changeNextCmd(command)
 
         # the 'q' button is set as the
         # quitting button you may use any
