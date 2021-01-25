@@ -14,13 +14,13 @@ def signo(contorno):
         area = cv2.contourArea(cnt)
         # Detección de signo de resta
         if len(approx) == 4:
-            if area < 20000 and area > 100:
+            if area < 20000 and area > 10000:
                 valido = 1
                 comando2 = 6
 
         # Detección de signo de suma
         if len(approx) == 12:
-            if area < 20000 and area > 100:
+            if area < 20000 and area > 10000:
                 valido = 1
                 comando2 = 5
 
