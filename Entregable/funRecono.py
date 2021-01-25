@@ -93,7 +93,8 @@ def recono(img):
                 if valido == 1:
                     comando = com2
     
-    
+
+    print(comando)
     return comando
 
 # commandsByNum = {0: "N/A",
@@ -128,6 +129,7 @@ def recono(img):
 #
 #     cv2.waitKey(0)
 #     cv2.destroyAllWindows()
+
 
 
 def camera(status):

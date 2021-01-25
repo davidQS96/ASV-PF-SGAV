@@ -3,20 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e1688837-b82a-4944-9c6e-a11b3d65c5b7" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fichas prueba 2.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fichas_final2.pdn" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fp201.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fp202.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fp203.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fp204.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fp205.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fp206.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fp207.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fp208.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fp209.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fp210.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fp211.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Entregable/Fichas/Fichas para pruebas 2/fp212.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Entregable/funRecono.py" beforeDir="false" afterPath="$PROJECT_DIR$/Entregable/funRecono.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
