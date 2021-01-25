@@ -57,7 +57,6 @@ def recono(img):
             if len(approx) == 4:
                 
                 valido,com2 = signo(contora)
-                print('d',com2,valido)
                 comando = 1
                 if valido == 1:
                     comando = com2
