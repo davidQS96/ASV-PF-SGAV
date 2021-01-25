@@ -172,6 +172,7 @@ def main():
         pg.draw.rect(screen, black, rect)
 
         if type(status.currImage) == np.ndarray:
+            print(status.currImage.shape)
             resized = cv2.resize(status.currImage, dim, interpolation = cv2.INTER_AREA)
 
             # https://note.nkmk.me/en/python-opencv-bgr-rgb-cvtcolor/
