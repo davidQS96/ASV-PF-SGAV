@@ -3,7 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="e1688837-b82a-4944-9c6e-a11b3d65c5b7" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Archivos temporales/Pista.pdn" beforeDir="false" afterPath="$PROJECT_DIR$/Archivos temporales/Pista.pdn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Fichas/fichas prueba 1/Fichas Prueba 1.docx" beforeDir="false" afterPath="$PROJECT_DIR$/Fichas/fichas prueba 1/Fichas Prueba 1.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Fichas/fichas pruebas 2/fichas prueba 2.docx" beforeDir="false" afterPath="$PROJECT_DIR$/Fichas/fichas pruebas 2/fichas prueba 2.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/funRecono.py" beforeDir="false" afterPath="$PROJECT_DIR$/funRecono.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graphicsClasses.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphicsClasses.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/interface.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
