@@ -1,16 +1,9 @@
 import cv2
 import numpy as np
 
-def signo(img,maskc,cont):
-    maskc = np.zeros(img.shape, dtype=np.uint8)
-    cv2.drawContours(maskc, cont, 0, (255, 255, 255), cv2.FILLED)
-    maskc = cv2.cvtColor(maskc, cv2.COLOR_RGB2GRAY)
-    corte = cv2.bitwise_or(img, img, mask=maskc)
-    gray = cv2.cvtColor(corte, cv2.COLOR_RGB2GRAY)
-    contorno, _ = cv2.findContours(gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
+def signo(contorno):
     valido = 0
-    comando2 = 6
+    comando2 = 0
 
     for cnt in contorno:
         approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)
@@ -46,30 +39,38 @@ def recono(img):
     contblu, _ = cv2.findContours(maskblu, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
     for cnt in contora:
+        
         approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)
+        
         if len(approx) == 3:
-            valido,com2 = signo(img,maskora,[approx])
+            
+            valido,com2 = signo(contora)
             comando = 2
             if valido == 1:
                 comando = com2
 
                 
         if len(approx) == 4:
-            valido,com2 = signo(img,maskora,[approx])
+            
+            valido,com2 = signo(contora)
             comando = 1
             if valido == 1:
                 comando = com2
                 
     for cnt in contblu:
+
         approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)
+        
         if len(approx) == 3:
-            valido,com2 = signo(img,maskblu,[approx])
+            
+            valido,com2 = signo(contblu)
             comando = 4
             if valido == 1:
                 comando = com2
                 
         if len(approx) == 4:
-            valido,com2 = signo(img,maskblu,[approx])
+            
+            valido,com2 = signo(contblu)
             comando = 3
             if valido == 1:
                 comando = com2
