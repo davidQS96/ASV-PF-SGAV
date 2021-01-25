@@ -34,7 +34,7 @@ def recono(img):
     upper_ora = np.array([110,255,255])
     maskora = cv2.inRange(hsv,lower_ora,upper_ora)
     
-    lower_blu = np.array([30, 150, 120])
+    lower_blu = np.array([20, 100, 100])
     upper_blu = np.array([50,255,255])
     maskblu = cv2.inRange(hsv,lower_blu,upper_blu)  
     
