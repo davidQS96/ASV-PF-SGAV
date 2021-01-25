@@ -26,6 +26,9 @@ def signo(contorno):
 def recono(img):
     comando = 0
     alto,bajo,_ = img.shape
+    tarea = alto*bajo
+    slimite = tarea*0.15
+    ilimite = tarea*0.02
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     lower_ora = np.array([70, 100, 160])
     upper_ora = np.array([110,255,255])
@@ -41,39 +44,42 @@ def recono(img):
     for cnt in contora:
         
         approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)
+        area = cv2.contourArea(cnt)
         
-        if len(approx) == 3:
-            
-            valido,com2 = signo(contora)
-            comando = 2
-            if valido == 1:
-                comando = com2
-
+        if area < slimite and area > ilimite:
+            if len(approx) == 3:
+                valido,com2 = signo(contora)
+                comando = 2
+                if valido == 1:
+                    comando = com2
+    
+                    
+            if len(approx) == 4:
                 
-        if len(approx) == 4:
-            
-            valido,com2 = signo(contora)
-            comando = 1
-            if valido == 1:
-                comando = com2
+                valido,com2 = signo(contora)
+                print('d',com2,valido)
+                comando = 1
+                if valido == 1:
+                    comando = com2
                 
     for cnt in contblu:
 
         approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)
+        area = cv2.contourArea(cnt)
         
-        if len(approx) == 3:
+        if area < slimite and area > ilimite:
             
-            valido,com2 = signo(contblu)
-            comando = 4
-            if valido == 1:
-                comando = com2
-                
-        if len(approx) == 4:
-            
-            valido,com2 = signo(contblu)
-            comando = 3
-            if valido == 1:
-                comando = com2
+            if len(approx) == 3:
+                valido,com2 = signo(contblu)
+                comando = 4
+                if valido == 1:
+                    comando = com2
+                    
+            if len(approx) == 4:
+                valido,com2 = signo(contblu)
+                comando = 3
+                if valido == 1:
+                    comando = com2
     
     
     return comando
