@@ -63,7 +63,7 @@ def recono(img):
                 comando = 2
                 if valido == 1:
                     comando = com2
-    
+                cv2.drawContours(img, [approx], 0, (0, 0, 0), 5)  
                     
             if len(approx) == 4:
                 
@@ -71,6 +71,7 @@ def recono(img):
                 comando = 3#1
                 if valido == 1:
                     comando = com2
+                cv2.drawContours(img, [approx], 0, (0, 0, 0), 5)  
                     
     # Busqueda de figuras de color turqueza      
     for cnt in contblu:
@@ -86,16 +87,17 @@ def recono(img):
                 comando = 4
                 if valido == 1:
                     comando = com2
+                cv2.drawContours(img, [approx], 0, (0, 0, 0), 5)  
                     
             if len(approx) == 4:
                 valido,com2 = signo(contblu)
                 comando = 1#3
                 if valido == 1:
                     comando = com2
-    
+                cv2.drawContours(img, [approx], 0, (0, 0, 0), 5)  
 
     #print(comando)
-    return comando
+    return comando,img
 
 # commandsByNum = {0: "N/A",
 #                 1: "Gira a la derecha y acelera",
