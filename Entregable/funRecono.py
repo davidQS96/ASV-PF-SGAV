@@ -68,7 +68,7 @@ def recono(img):
             if len(approx) == 4:
                 
                 valido,com2 = signo(contora)
-                comando = 1
+                comando = 3#1
                 if valido == 1:
                     comando = com2
                     
@@ -89,12 +89,12 @@ def recono(img):
                     
             if len(approx) == 4:
                 valido,com2 = signo(contblu)
-                comando = 3
+                comando = 1#3
                 if valido == 1:
                     comando = com2
     
 
-    print(comando)
+    #print(comando)
     return comando
 
 # commandsByNum = {0: "N/A",
@@ -144,13 +144,16 @@ def camera(status):
         # Capture the video frame
         # by frame
         ret, frame = vid.read()
-        status.currImage = frame
+
         # Display the resulting frame
         # cv2.imshow('frame', frame)
 
         if ret == True:
             command = recono(frame)
-            print("comando desde recono", command)
+            #print("comando desde recono", command)
+
+            frame = np.flip(frame, 1) #Refleja imagen respecto al eje y, para facilitar el posicionamiento de las figuras
+            status.currImage = frame
 
             status.changeNextCmd(command)
 
