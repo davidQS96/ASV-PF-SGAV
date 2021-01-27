@@ -3,7 +3,7 @@ import numpy as np
 
 
 # Función de detección de signo
-def signo(contorno):
+def signo(contorno,sslimite,ilimite,img):
     # Variables
     valido = 0
     comando2 = 0
@@ -14,27 +14,41 @@ def signo(contorno):
         area = cv2.contourArea(cnt)
         # Detección de signo de resta
         if len(approx) == 4:
-            if area < 20000 and area > 10000:
+            if area < sslimite and area > ilimite:
                 valido = 1
                 comando2 = 6
+                cv2.drawContours(img, [approx], 0, (255, 0, 0), 5)
 
         # Detección de signo de suma
         if len(approx) == 12:
-            if area < 20000 and area > 10000:
+            if area < sslimite and area > ilimite:
                 valido = 1
                 comando2 = 5
+                cv2.drawContours(img, [approx], 0, (255, 0, 0), 5)
+
+    return  valido,comando2,img
 
 
-    return  valido,comando2
+def subborde(lineas,img):
+    maskc = np.zeros(img.shape, dtype=np.uint8)
+    cv2.drawContours(maskc, lineas, 0, (255, 255, 255), cv2.FILLED)
+    maskc = cv2.cvtColor(maskc, cv2.COLOR_RGB2GRAY)
+    corte = cv2.bitwise_or(img, img, mask=maskc)
+    corte = cv2.cvtColor(corte, cv2.COLOR_RGB2GRAY)
+    return corte
 
 # Reconocimiento de instrucciones
 def recono(img):
     # Variable del sistema
     comando = 0
+    comando2 = 0
+    img2 = img.copy()
     alto,bajo,_ = img.shape
     tarea = alto*bajo
     slimite = tarea*0.15
+    sslimite = tarea*0.05
     ilimite = tarea*0.02
+    silimite = tarea*0.005
     
     #Mascaras para color naranja y turqueza
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -59,7 +73,11 @@ def recono(img):
         # Clasificación de figuras en triangulo o rectangulo
         if area < slimite and area > ilimite:
             if len(approx) == 3:
-                valido,com2 = signo(contora)
+                
+                corte = subborde([approx],img2)
+                contorno, _ = cv2.findContours(corte, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                valido,com2,img = signo(contorno,sslimite,silimite,img)
+                
                 comando = 2
                 if valido == 1:
                     comando = com2
@@ -67,7 +85,10 @@ def recono(img):
                     
             if len(approx) == 4:
                 
-                valido,com2 = signo(contora)
+                corte = subborde([approx],img2)
+                contorno, _ = cv2.findContours(corte, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                valido,com2,img = signo(contorno,sslimite,silimite,img)
+                
                 comando = 3#1
                 if valido == 1:
                     comando = com2
@@ -83,14 +104,22 @@ def recono(img):
         if area < slimite and area > ilimite:
             
             if len(approx) == 3:
-                valido,com2 = signo(contblu)
+                
+                corte = subborde([approx],img2)
+                contorno, _ = cv2.findContours(corte, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                valido,com2,img = signo(contorno,sslimite,silimite,img)
+                
                 comando = 4
                 if valido == 1:
                     comando = com2
                 cv2.drawContours(img, [approx], 0, (0, 0, 0), 5)  
                     
             if len(approx) == 4:
-                valido,com2 = signo(contblu)
+                
+                corte = subborde([approx],img2)
+                contorno, _ = cv2.findContours(corte, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                valido,com2,img = signo(contorno,sslimite,silimite,img)
+                
                 comando = 1#3
                 if valido == 1:
                     comando = com2
