@@ -237,7 +237,7 @@ class Car:
     # Metodo constructor
     # self.circuit es el circuito que recorre el carro
     # self.screen es la pantalla donde se dibuja carro
-    # self.prgmStatus se usara para monitorear el estado del programa
+    # self.status se usara para monitorear el estado del programa
     # self.color es el color del carro,                            temporal****
     # self.radius es el radio del carro representado como circulo, temporal****
     # initSpeed es la velocidad inicial del carro, pix por seg
@@ -250,7 +250,7 @@ class Car:
     # self.posX y self.posY son las coordenadas de posicion del carro dentro de la ventana
     # self.vectors es una serie de multiplicadores para calcular posiciones siguientes
     # self.possibleDirections son los puntos cardinales posibles de movimiento, independiente de los vecinos de cada punto
-    def __init__(self, circuit, screen, prgmStatus, color, radius=5, initSpeed=10):
+    def __init__(self, circuit, screen, status, color, radius=5, initSpeed=10):
         # Validacion de circuit
         if type(circuit) != Circuit:
             print("Car.__init__: circuit no es tipo Circuito, se asigna None.")
@@ -267,13 +267,13 @@ class Car:
         else:
             self.screen = screen
 
-        # Validacion de prgmStatus
-        if type(prgmStatus) != classes.ProgramStatus:
+        # Validacion de status
+        if type(status) != classes.ProgramStatus:
             print("Car.__init__: screen no es tipo classes.ProgramStatus, se asigna None.")
-            self.prgmStatus = None
+            self.status = None
 
         else:
-            self.prgmStatus = prgmStatus
+            self.status = status
 
         # Validacion de color
         if type(color) != tuple or len(color) != 3:
@@ -311,7 +311,7 @@ class Car:
 
         self.speed = initSpeed  # pix/s
         self.minSpeed = 10 # pix/s
-        self.diffSpeed = 200 # pix/s
+        self.diffSpeed = 20 # pix/s
         self.isRunning = True
         self.direction = "N"
         self.posX = self.lastPoint.getCoords()["x"]
@@ -336,20 +336,21 @@ class Car:
         # https://www.youtube.com/watch?v=YOCt8nsQqEo&ab_channel=ClearCode
         if not self.isRunning:
             currTime = pg.time.get_ticks()
-            self.prgmStatus.timeLeft = round(10000 - (currTime - self.prgmStatus.stopTime), 3) / 1000
+            self.status.timeLeft = round(10000 - (currTime - self.status.stopTime), 3) / 1000
 
-            if self.prgmStatus.timeLeft <= 0:
-                self.prgmStatus.timeLeft = 0
+            if self.status.timeLeft <= 0:
+                self.status.timeLeft = 0
 
             #Espera a que hayan pasado 10s y solo reanuda movimiento cuando se elige puesta en marcha
-            if self.prgmStatus.timeLeft <= 0 and self.prgmStatus.nextCommandNum == 6:
+            if self.status.timeLeft <= 0 and self.status.nextCommandNum == 6:
                 self.isRunning = True
+                self.status.carIsRunning = True
 
             self.updateGraphic()
             return
 
         # Posiciones siguientes
-        trueSpeed = self.speed / self.prgmStatus.framerate # pix/seg * seg/frame = pix/frame
+        trueSpeed = self.speed / self.status.framerate # pix/seg * seg/frame = pix/frame
 
         tempX = self.posX + self.vectors[self.direction][0] * trueSpeed
         tempY = self.posY + self.vectors[self.direction][1] * trueSpeed
@@ -387,7 +388,7 @@ class Car:
     # Metodo para decidir el siguiente movimiento en una interseccion
     # Si no hay un comando disponible, elige entre una lista de direcciones predeterminadas
     def decideNextMovement(self):
-        commandNum = self.prgmStatus.nextCommandNum
+        commandNum = self.status.nextCommandNum
 
         if commandNum == None:  # No se tiene un comando siguiente, el carro circula normalmente
             self.moveNormally()
@@ -421,8 +422,9 @@ class Car:
         if len(command) == 1:  # (action)
             if command[0] == 0:  # detencion
                 # https://www.youtube.com/watch?v=YOCt8nsQqEo&ab_channel=ClearCode
-                self.prgmStatus.stopTime = pg.time.get_ticks()
+                self.status.stopTime = pg.time.get_ticks()
                 self.isRunning = False
+                self.status.carIsRunning = False
 
             elif command[0] == 1:  # Puesta en marcha
                 self.moveNormally()
@@ -440,8 +442,8 @@ class Car:
 
             self.atIntersectionMoveTo(direction)
 
-        print("Comando anterior: " + str(commandNum) + "-" + self.prgmStatus.commandsByNum[commandNum])
-        self.prgmStatus.resetCmdNumber()  # Se reinicia el comando y vuelve al inicial
+        print("Comando anterior: " + str(commandNum) + "-" + self.status.commandsByNum[commandNum][1])
+        self.status.resetCmdNumber()  # Se reinicia el comando y vuelve al inicial
         return
 
     # Calculo de movimiento en interseccion donde se desea mover a la izquierda (90deg cw) o derecha (90deg ccw)

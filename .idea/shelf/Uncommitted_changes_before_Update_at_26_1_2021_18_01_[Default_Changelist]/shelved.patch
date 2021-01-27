@@ -1,0 +1,322 @@
+Index: Entregable/funRecono.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import cv2\r\nimport numpy as np\r\n\r\n\r\n# Función de detección de signo\r\ndef signo(contorno):\r\n    # Variables\r\n    valido = 0\r\n    comando2 = 0\r\n    # Reconocimento de figuras\r\n    for cnt in contorno:\r\n        # Detección de figuras\r\n        approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)\r\n        area = cv2.contourArea(cnt)\r\n        # Detección de signo de resta\r\n        if len(approx) == 4:\r\n            if area < 20000 and area > 10000:\r\n                valido = 1\r\n                comando2 = 6\r\n\r\n        # Detección de signo de suma\r\n        if len(approx) == 12:\r\n            if area < 20000 and area > 10000:\r\n                valido = 1\r\n                comando2 = 5\r\n\r\n\r\n    return  valido,comando2\r\n\r\n# Reconocimiento de instrucciones\r\ndef recono(img):\r\n    # Variable del sistema\r\n    comando = 0\r\n    alto,bajo,_ = img.shape\r\n    tarea = alto*bajo\r\n    slimite = tarea*0.15\r\n    ilimite = tarea*0.02\r\n    \r\n    #Mascaras para color naranja y turqueza\r\n    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)\r\n    lower_ora = np.array([70, 100, 160])\r\n    upper_ora = np.array([110,255,255])\r\n    maskora = cv2.inRange(hsv,lower_ora,upper_ora)\r\n    \r\n    lower_blu = np.array([20, 100, 100])\r\n    upper_blu = np.array([50,255,255])\r\n    maskblu = cv2.inRange(hsv,lower_blu,upper_blu)  \r\n    \r\n    contora, _ = cv2.findContours(maskora, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)\r\n    contblu, _ = cv2.findContours(maskblu, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)\r\n    \r\n    \r\n    # Busqueda de figuras de color naranja\r\n    for cnt in contora:\r\n        \r\n        approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)\r\n        area = cv2.contourArea(cnt)\r\n        \r\n        # Clasificación de figuras en triangulo o rectangulo\r\n        if area < slimite and area > ilimite:\r\n            if len(approx) == 3:\r\n                valido,com2 = signo(contora)\r\n                comando = 2\r\n                if valido == 1:\r\n                    comando = com2\r\n    \r\n                    \r\n            if len(approx) == 4:\r\n                \r\n                valido,com2 = signo(contora)\r\n                comando = 3#1\r\n                if valido == 1:\r\n                    comando = com2\r\n                    \r\n    # Busqueda de figuras de color turqueza      \r\n    for cnt in contblu:\r\n\r\n        approx = cv2.approxPolyDP(cnt, 0.02*cv2.arcLength(cnt, True), True)\r\n        area = cv2.contourArea(cnt)\r\n        \r\n        # Clasificación de figuras en triangulo o rectangulo\r\n        if area < slimite and area > ilimite:\r\n            \r\n            if len(approx) == 3:\r\n                valido,com2 = signo(contblu)\r\n                comando = 4\r\n                if valido == 1:\r\n                    comando = com2\r\n                    \r\n            if len(approx) == 4:\r\n                valido,com2 = signo(contblu)\r\n                comando = 1#3\r\n                if valido == 1:\r\n                    comando = com2\r\n    \r\n\r\n    #print(comando)\r\n    return comando\r\n\r\n# commandsByNum = {0: \"N/A\",\r\n#                 1: \"Gira a la derecha y acelera\",\r\n#                 2: \"Gira a la izquierda y acelera\",\r\n#                 3: \"Gira a la derecha y desacelera\",\r\n#                 4: \"Gira a la izquierda y desacelera\",\r\n#                 5: \"Detención\",\r\n#                 6: \"Puesta en marcha\"}\r\n#\r\n#\r\n#\r\n# scale_percent = 35 # percent of original size\r\n\r\n# for i in range(1, 16 + 1):\r\n#     numFile = \"0\" + str(i) if i < 10 else str(i)\r\n#     print(numFile)\r\n#\r\n#     img = cv2.imread(\"Fichas/t\" + numFile + \".jpg\")\r\n#\r\n#     width = int(img.shape[1] * scale_percent / 100)\r\n#     height = int(img.shape[0] * scale_percent / 100)\r\n#     dim = (width, height)\r\n#\r\n#     # resize image\r\n#     resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)\r\n#\r\n#     res = recono(img)\r\n#\r\n#     print(res, commandsByNum[res[0]])\r\n#     cv2.imshow('image', resized)\r\n#\r\n#     cv2.waitKey(0)\r\n#     cv2.destroyAllWindows()\r\n\r\n\r\n\r\ndef camera(status):\r\n    # https://www.geeksforgeeks.org/python-opencv-capture-video-from-camera/\r\n    # define a video capture object\r\n    vid = cv2.VideoCapture(0)\r\n\r\n    condition = True\r\n\r\n    while(condition and status.running):\r\n\r\n        # Capture the video frame\r\n        # by frame\r\n        ret, frame = vid.read()\r\n\r\n        # Display the resulting frame\r\n        # cv2.imshow('frame', frame)\r\n\r\n        if ret == True:\r\n            command = recono(frame)\r\n            #print(\"comando desde recono\", command)\r\n\r\n            frame = np.flip(frame, 1) #Refleja imagen respecto al eje y, para facilitar el posicionamiento de las figuras\r\n            status.currImage = frame\r\n\r\n            status.changeNextCmd(command)\r\n\r\n        # the 'q' button is set as the\r\n        # quitting button you may use any\r\n        # desired button of your choice\r\n        if cv2.waitKey(1) & 0xFF == ord('q'):\r\n            condition = False\r\n            break\r\n\r\n\r\n    # After the loop release the cap object\r\n    vid.release()\r\n    # Destroy all the windows\r\n    cv2.destroyAllWindows()\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Entregable/funRecono.py b/Entregable/funRecono.py
+--- a/Entregable/funRecono.py	(revision b79ae468d8abcb1a0d18250534304e4d5d8f89bf)
++++ b/Entregable/funRecono.py	(date 1611705628478)
+@@ -97,40 +97,6 @@
+     #print(comando)
+     return comando
+ 
+-# commandsByNum = {0: "N/A",
+-#                 1: "Gira a la derecha y acelera",
+-#                 2: "Gira a la izquierda y acelera",
+-#                 3: "Gira a la derecha y desacelera",
+-#                 4: "Gira a la izquierda y desacelera",
+-#                 5: "Detención",
+-#                 6: "Puesta en marcha"}
+-#
+-#
+-#
+-# scale_percent = 35 # percent of original size
+-
+-# for i in range(1, 16 + 1):
+-#     numFile = "0" + str(i) if i < 10 else str(i)
+-#     print(numFile)
+-#
+-#     img = cv2.imread("Fichas/t" + numFile + ".jpg")
+-#
+-#     width = int(img.shape[1] * scale_percent / 100)
+-#     height = int(img.shape[0] * scale_percent / 100)
+-#     dim = (width, height)
+-#
+-#     # resize image
+-#     resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+-#
+-#     res = recono(img)
+-#
+-#     print(res, commandsByNum[res[0]])
+-#     cv2.imshow('image', resized)
+-#
+-#     cv2.waitKey(0)
+-#     cv2.destroyAllWindows()
+-
+-
+ 
+ def camera(status):
+     # https://www.geeksforgeeks.org/python-opencv-capture-video-from-camera/
+@@ -149,14 +115,28 @@
+         # cv2.imshow('frame', frame)
+ 
+         if ret == True:
+-            command = recono(frame)
++            lastCommand = status.nextCommandNum
+             #print("comando desde recono", command)
+ 
++            if status.sameCommandCount <= status.sameCommandMaxCount:
++                command = recono(frame)
++
++                if command != 0 and command == lastCommand:
++                    if status.carIsRunning:
++                        status.sameCommandCount += 1
++
++                    elif command == 6: #Si el carro esta detenido, solo cuenta los de puesta en marcha
++                        status.sameCommandCount += 1
++
++
++                else:
++                    status.resetSameCount()
++
++                status.changeNextCmd(command)
++
+             frame = np.flip(frame, 1) #Refleja imagen respecto al eje y, para facilitar el posicionamiento de las figuras
+             status.currImage = frame
+ 
+-            status.changeNextCmd(command)
+-
+         # the 'q' button is set as the
+         # quitting button you may use any
+         # desired button of your choice
+Index: Entregable/interface.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># Importacion de bibliotecas ----------------------------------------------------------------------\r\nimport pygame as pg\r\nimport pygame.freetype as ft\r\nimport threading as th\r\nimport cv2\r\nimport numpy as np\r\n\r\n# Importacion de modulos propios --------------------------------------------------------------------------\r\nfrom graphicsClasses import *\r\nfrom classes import *\r\nfrom funRecono import *\r\n\r\n# Constantes -----------------------------------------------------------------------------------------\r\n\r\nmaxDims = (1920, 1080)\r\nmultiplFactor = 0.8 / 1.25  # (.8 / 1.25, resolucion de 1229 x 691)\r\nwindowCaption = \"Proyecto SV - Simulador de Pista\"\r\n\r\n# Constantes de pista\r\npathWidth = 55\r\n\r\n# Constantes de movimiento\r\nspeed = 300\r\n\r\n# Colores\r\nblack = (0, 0, 0)\r\nlightBlue = (183, 255, 247)\r\ndarkGreen = (0, 180, 65)\r\nlightGrey = (150, 150, 150)\r\nred = (255, 0, 0)\r\nblue = (0, 0, 255)\r\ngreen = (0, 255, 0)\r\n\r\nbgColor = darkGreen  # For the background color of your window\r\nstreetColor = black\r\nsidewalkColor = lightGrey\r\ncarColor = red\r\ntextColor = black\r\n\r\n# Puntos del circuito con coordenadas predefinidas\r\npoints = ((238, 69), (505, 69), (99, 143), (238, 143),\r\n          (386, 143), (505, 143), (817, 143), (1129, 143),\r\n          (99, 397), (238, 397), (505, 397), (817, 397),\r\n          (1129, 397), (817, 509), (1129, 509), (386, 621), (1129, 621))\r\n\r\n\r\n# Creacion del circuito -----------------------------------------------------------------------------\r\ndef main():\r\n    circuit = Circuit()\r\n    circuit.addNeighborToLast(3, points[3])\r\n    circuit.addNeighborToLast(9, points[9])\r\n    circuit.addNeighborToLast(8, points[8])\r\n    circuit.addNeighborToLast(2, points[2])\r\n    circuit.joinLastTo(3)\r\n    circuit.addNeighborToLast(0, points[0])\r\n    circuit.addNeighborToLast(1, points[1])\r\n    circuit.addNeighborToLast(5, points[5])\r\n    circuit.addNeighborToLast(4, points[4])\r\n    circuit.addNeighborToLast(15, points[15])\r\n    circuit.addNeighborToLast(16, points[16])\r\n    circuit.addNeighborToLast(14, points[14])\r\n    circuit.addNeighborToLast(13, points[13])\r\n    circuit.addNeighborToLast(11, points[11])\r\n    circuit.addNeighborToLast(12, points[12])\r\n    circuit.addNeighborToLast(7, points[7])\r\n    circuit.addNeighborToLast(6, points[6])\r\n    circuit.joinLastTo(11)\r\n    circuit.addNeighborToLast(10, points[10])\r\n    circuit.joinLastTo(5)\r\n    circuit.joinLastTo(6)\r\n\r\n    # Creacion de ventana --------------------------------------------------------------------------------\r\n    # https://riptutorial.com/pygame/example/22240/creating-the-pygame-window\r\n    (width, height) = (round(maxDims[0] * multiplFactor), round(maxDims[1] * multiplFactor))  # Dimension of the window\r\n\r\n    # Creacion de ventana\r\n    pg.init()\r\n    screen = pg.display.set_mode((width, height))  # Making of the screen\r\n    gameFont = ft.SysFont(\"Tehoma\", 20)  # Fuente de texto\r\n    pg.display.set_caption(windowCaption)  # Name for the window\r\n\r\n    #Creacion de reloj de pygame\r\n    clock = pg.time.Clock()\r\n    status.clock = clock\r\n    prevTime = 0\r\n    currTime = 0\r\n    fps = 0\r\n    fpsShown = 0\r\n    refreshCont = 0\r\n\r\n    # Instancia del carro\r\n    car = Car(circuit, screen, status, carColor, (pathWidth - 24) / 2, speed)\r\n\r\n    # Loop para ventana\r\n    while status.running:\r\n        # Condicion para terminar programa y ventana grafica\r\n        for event in pg.event.get():\r\n            if event.type == pg.QUIT:\r\n                status.running = False\r\n                break\r\n\r\n        if not status.running:\r\n            pg.quit()\r\n            break\r\n\r\n\r\n        prevTime = currTime\r\n        currTime = pg.time.get_ticks()\r\n        fps = 1000 / (currTime - prevTime)\r\n\r\n        if refreshCont % (status.framerate / 2) == 0:\r\n            fpsShown = fps\r\n\r\n        refreshCont += 1\r\n\r\n        screen.fill(bgColor)  # This syntax fills the background colour\r\n\r\n        # Se dibujan las lineas del circuito\r\n        for line in circuit.getLines():\r\n            point1 = [line[0]['x'], line[0]['y']]\r\n            point2 = [line[1]['x'], line[1]['y']]\r\n\r\n            # Se cambia largo para que esquinas de caminos coincidan\r\n            if point1[0] == point2[0]:  # Linea vertical\r\n                if point1[1] > point2[1]:\r\n                    point2[1] -= pathWidth / 2 - 1\r\n                    point1[1] += pathWidth / 2\r\n\r\n                else:\r\n                    point1[1] -= pathWidth / 2 - 1\r\n                    point2[1] += pathWidth / 2\r\n\r\n            elif point1[1] == point2[1]:  # Linea horizontal\r\n                if point1[0] > point2[0]:\r\n                    point2[0] -= pathWidth / 2 - 1\r\n                    point1[0] += pathWidth / 2\r\n\r\n                else:\r\n                    point1[0] -= pathWidth / 2 - 1\r\n                    point2[0] += pathWidth / 2\r\n\r\n            pg.draw.line(screen, streetColor, point1, point2, pathWidth)\r\n\r\n        # Texto de siguiente movimiento\r\n        # https://stackoverflow.com/questions/20842801/how-to-display-text-in-pygame\r\n        # You can use `render` and then blit the text surface ...\r\n        text_surface, rect = gameFont.render(\"Sig: \" + status.nextCommand, textColor)\r\n        screen.blit(text_surface, (600, 40))\r\n\r\n        # Texto de velocidad del carro\r\n        text_surface2, rect2 = gameFont.render(\"Veloc: \" + str(car.speed) + \" pix/s\", textColor)\r\n        screen.blit(text_surface2, (600, 70))\r\n\r\n        # Texto de cuadros por segundo\r\n        text_surface3, rect2 = gameFont.render(\"FPS: \" + str(round(fpsShown, 1)), textColor)\r\n        screen.blit(text_surface3, (1000, 40))\r\n\r\n        # Texto de temporizador\r\n        text_surface4, rect2 = gameFont.render(\"Reloj: \" + str(status.timeLeft) + \" s\", textColor)\r\n        screen.blit(text_surface4, (1000, 70))\r\n\r\n        # Se mueve carro\r\n        car.move()\r\n\r\n        #Ver el feed de la camara en el interfaz\r\n        # https://www.geeksforgeeks.org/python-display-images-with-pygame/\r\n        # copying the image surface object\r\n        # to the display surface object\r\n        dim = (279, 209)\r\n\r\n        rect = pg.Rect((54 - 4, 450 - 4), (dim[0] + 8, dim[1] + 8))\r\n        pg.draw.rect(screen, black, rect)\r\n\r\n        if type(status.currImage) == np.ndarray:\r\n            resized = cv2.resize(status.currImage, dim, interpolation = cv2.INTER_AREA)\r\n\r\n            # https://note.nkmk.me/en/python-opencv-bgr-rgb-cvtcolor/\r\n            resized = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)\r\n\r\n            # https://stackoverflow.com/questions/30818367/how-to-present-numpy-array-into-pygame-surface\r\n            resized = np.swapaxes(resized, 0, 1)\r\n            newSurface = pg.pixelcopy.make_surface(resized)\r\n            screen.blit(newSurface, (54, 450))\r\n\r\n        # Actualiza ventana\r\n        pg.display.flip()\r\n\r\n        #Interfaz avanza a una frecuencia de framerate\r\n        clock.tick(status.framerate)\r\n\r\n\r\n# Algoritmo que se encarga de reconocer patrones en imagenes de la camara\r\ndef patternRecognition():\r\n\r\n    #Camara, esta funcion llama al algoritmo de reconocimiento de comandos\r\n    camera(status) #Esta dentro de un loop\r\n\r\nif __name__ == \"__main__\":\r\n    #Clase usada como memoria que todos los programas comparten\r\n    status = ProgramStatus()\r\n\r\n    #Thread de main para correr programas en paralelo\r\n    # https://realpython.com/intro-to-python-threading/\r\n    th.Thread(target=main).start()\r\n\r\n    patternRecognition()\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Entregable/interface.py b/Entregable/interface.py
+--- a/Entregable/interface.py	(revision b79ae468d8abcb1a0d18250534304e4d5d8f89bf)
++++ b/Entregable/interface.py	(date 1611704972840)
+@@ -20,7 +20,7 @@
+ pathWidth = 55
+ 
+ # Constantes de movimiento
+-speed = 300
++speed = 200
+ 
+ # Colores
+ black = (0, 0, 0)
+@@ -144,7 +144,7 @@
+         # Texto de siguiente movimiento
+         # https://stackoverflow.com/questions/20842801/how-to-display-text-in-pygame
+         # You can use `render` and then blit the text surface ...
+-        text_surface, rect = gameFont.render("Sig: " + status.nextCommand, textColor)
++        text_surface, rect = gameFont.render("Sig: " + status.nextCommand + " (" + str(status.sameCommandCount) + ")", textColor)
+         screen.blit(text_surface, (600, 40))
+ 
+         # Texto de velocidad del carro
+Index: Entregable/graphicsClasses.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame as pg\r\n\r\nimport classes\r\n\r\n\r\n# Clase para guardar cada punto del circuito\r\nclass Point:\r\n\r\n    # Metodo constructor\r\n    # self.identif es un numero entero para identificar y llamar a un punto\r\n    # self.coords son las coordenadas representadas con un diccionario, en pixeles, dentro de la ventana\r\n    # self.neigbors es una lista con los puntos conectados al punto, y su angulo relativo\r\n    # self.numConns es la cantidad entera de puntos conectados al punto\r\n    # self.possibleDirections son los puntos cardinales posibles, ya que cada punto solo tiene vecinos en estas direcciones\r\n    def __init__(self, identif, coords):\r\n        if type(coords) != tuple or len(coords) != 2:\r\n            print(\"Point.__init__: coords\", coords, \"no es valido.\")\r\n            return\r\n\r\n        for elem in coords:\r\n            if type(elem) != int or elem < 0:\r\n                print(\"Point.__init__: coordenadas\", coords, \"no validas.\")\r\n                return\r\n\r\n        self.identif = identif\r\n        self.coords = {\"x\": coords[0], \"y\": coords[1]}\r\n        self.neighbors = {}  # Direcc: punto vecino en esa direcc\r\n        self.numConns = 0\r\n        self.possibleDirections = (\"N\", \"E\", \"S\", \"O\")\r\n\r\n    # Metodo para agregar un punto vecino conectado al punto\r\n    # point es un objeto Point\r\n    # direction es un string igual a \"N\", \"E\", \"S\" u \"O\"\r\n    def addNeighbor(self, point, direction):\r\n        # Verifica tipo de point\r\n        if type(point) != Point:\r\n            print(\"Point.addNeighbor: point no es de tipo Point.\")\r\n            return\r\n\r\n        # Verifica si la direccion es de tipo y valor correctos\r\n        if direction not in self.possibleDirections:\r\n            print(\"Point.addNeighbor: direction no es valido.\")\r\n            return\r\n\r\n        # Verifica si el punto a agregar no es el objeto mismo\r\n        if point == self:\r\n            print(\"Point.addNeighbor: punto no puede ser su propio vecino.\")\r\n            return\r\n\r\n        # Verifica si punto a agregar ya esta en la lista\r\n        for neighbor in self.neighbors:\r\n            if point == neighbor:\r\n                print(\"Point.addNeighbor: vecino %d repetido dentro de punto %d.\" % (point.identif, self.identif))\r\n                return\r\n\r\n        # Verifica si el punto ya tiene un vecino en la direccion ingresada\r\n        if direction in self.neighbors:\r\n            print(\"Point.addNeighbor: punto %d ya tiene un vecino en la direccion %s.\" % (self.identif, direction))\r\n            return\r\n\r\n        self.neighbors[direction] = point\r\n        self.numConns += 1\r\n\r\n        # Debido a que cada conexion es bidireccional, verifica que no se agregue\r\n        # el mimso punto al punto agregado\r\n        for neighborDir in point.neighbors:\r\n\r\n            if point.neighbors[neighborDir] == self:\r\n                return\r\n\r\n        # Se agrega direccion contraria de vuelta a lastPoint (relativo a newPoint)\r\n        newIx = -1\r\n        numDirections = len(self.possibleDirections)\r\n        for ix in range(numDirections):\r\n            if self.possibleDirections[ix] == direction:\r\n                newIx = ix\r\n                break\r\n\r\n        newIx = (newIx + 2) % numDirections  # newIx es el el indice del punto cardinal contrario al actual\r\n        newDirection = self.possibleDirections[newIx]\r\n\r\n        point.addNeighbor(self, newDirection)\r\n\r\n    # Metodo para obtener puntos vecinos\r\n    def getNeighbors(self):\r\n        return self.neighbors\r\n\r\n    # Metodo para obtener coordenadas del punto\r\n    def getCoords(self):\r\n        return self.coords\r\n\r\n    # Metodo para obtener identificador del punto\r\n    def getIdentif(self):\r\n        return self.identif\r\n\r\n    # Metodo para obtener numero de conexiones o vecinos del punto\r\n    def getNumConns(self):\r\n        return self.numConns\r\n\r\n    # Metodo para debug, muestra vecinos por su identificador\r\n    def getNeighborsAsIdentif(self):\r\n        temp = {}\r\n        for key in self.neighbors:\r\n            temp[key] = self.neighbors[key].identif\r\n\r\n        return temp\r\n\r\n\r\n# Clase que representa al circuito donde circulara el carro\r\nclass Circuit:\r\n\r\n    # Metodo constructor\r\n    # self.points son los puntos que conforman el circuito\r\n    # self.lastPoints se usa para construir el circuito, es el ultimo punto agregado\r\n    # self.lines son todas las lineas entre 2 puntos, sin repetir, que conforman el circuito\r\n    def __init__(self):\r\n        self.points = []\r\n        self.lastPoint = None\r\n        self.lines = []\r\n\r\n    # Metodo para agregar un punto vecino al ultimo punto agregado\r\n    # identif es el identificador del punto\r\n    # coords son las coordenadas del punto\r\n    def addNeighborToLast(self, identif, coords):\r\n        newPoint = Point(identif, coords)\r\n        # Se verifica si se creo un newPoint correctamente\r\n        if newPoint == None:\r\n            print(\"Circuit.addNeighborToLast: newPoint no valido.\")\r\n            return\r\n\r\n        self.points += [newPoint]\r\n\r\n        # Si ya el circuito tiene por lo menos un punto, i.e. no es None\r\n        if self.lastPoint != None:\r\n            # Se calcula direccion de newPoint relativo a lastPoint\r\n            direction = self.detDirectionRelToLast(newPoint)\r\n            # Verificacion de direccion correcta\r\n            if direction == None:\r\n                print(\"Circuit.addNeighborToLast: no se encontro direccion valida.\")\r\n                return\r\n\r\n            self.lastPoint.addNeighbor(newPoint, direction)\r\n\r\n            # Se agrega linea al circuito\r\n            lastCoords = self.lastPoint.getCoords()\r\n            newCoords = newPoint.getCoords()\r\n            self.lines += [(lastCoords, newCoords)]\r\n\r\n        self.lastPoint = newPoint\r\n\r\n    # Metodo para agregar una conexion del ultimo punto a un punto ya agregado\r\n    # identif es el identificador del punto al que se quiere conectar el ultimo punto\r\n    def joinLastTo(self, identif):\r\n        # Busca el punto con identificador identif\r\n        for point in self.points:\r\n            if point.getIdentif() == identif:\r\n\r\n                # Se calcula direccion de newPoint relativo a lastPoint\r\n                direction = self.detDirectionRelToLast(point)\r\n                # Verificacion de direccion correcta\r\n                if direction == None:\r\n                    print(\"Circuit.joinLastTo: no se encontro direccion valida.\")\r\n                    return\r\n\r\n                self.lastPoint.addNeighbor(point, direction)\r\n\r\n                # Se agrega linea al circuito\r\n                lastCoords = self.lastPoint.getCoords()\r\n                newCoords = point.getCoords()\r\n                self.lines += [(lastCoords, newCoords)]\r\n\r\n                self.lastPoint = point\r\n                return\r\n\r\n        print(\"Circuit.joinLastTo: no se encontro el punto deseado.\")\r\n\r\n    # Metodo para cambiar el ultimo punto del circuito\r\n    # identif es el identificador del punto que se quiere como ultimo\r\n    def changeLastTo(self, identif):\r\n        for point in self.points:\r\n            if point.getIdentif() == identif:\r\n                self.lastPoint = point\r\n                return\r\n\r\n        print(\"Circuit.changeLastTo: no se encontro el punto deseado.\")\r\n\r\n    # Metodo para calcular la direccion de point relativo a lastPoint\r\n    # point es un objeto tipo punto\r\n    def detDirectionRelToLast(self, point):\r\n        # Verifica tipo de point\r\n        if type(point) != Point:\r\n            print(\"Circuit: point no es de tipo Point.\")\r\n            return\r\n\r\n        # Coordenadas\r\n        xr = self.lastPoint.getCoords()['x']\r\n        yr = self.lastPoint.getCoords()['y']\r\n        x2 = point.getCoords()['x']\r\n        y2 = point.getCoords()['y']\r\n\r\n        # Identificacion de punto cardinal\r\n        if xr == x2:\r\n            # Verificacion de mismas coordenadas\r\n            if yr == y2:\r\n                print(\"Circuit.detDirectionRelToLast: point %d no puede tener mismas coordenadas que lastPoint %d.\" % (\r\n                point.getIdentif(), self.lastPoint.getIdentif()))\r\n                return\r\n\r\n            elif yr > y2:\r\n                return \"N\"\r\n\r\n            else:\r\n                return \"S\"\r\n\r\n        if yr == y2:\r\n            if xr < x2:\r\n                return \"E\"\r\n\r\n            else:\r\n                return \"O\"\r\n\r\n        print(\"Circuit.detDirectionRelToLast: no se encontro direccion cardinal\")\r\n        return\r\n\r\n    # Metodo para obtener las lineas del circuito\r\n    def getLines(self):\r\n        return self.lines\r\n\r\n    # Metodo para obtener puntos del circuito\r\n    def getPoints(self):\r\n        return self.points\r\n\r\n\r\n# Clase que representa un carro\r\nclass Car:\r\n\r\n    # Metodo constructor\r\n    # self.circuit es el circuito que recorre el carro\r\n    # self.screen es la pantalla donde se dibuja carro\r\n    # self.prgmStatus se usara para monitorear el estado del programa\r\n    # self.color es el color del carro,                            temporal****\r\n    # self.radius es el radio del carro representado como circulo, temporal****\r\n    # initSpeed es la velocidad inicial del carro, pix por seg\r\n    # self.firstPoint es el punto donde se coloca el carro al principio\r\n    # self.lastPoint es el punto inicial de la trayectoria del carro\r\n    # self.nextPoint es el punto final de trayectoria, o el destino del carro\r\n    # self.speed es la velocidad actual del carro\r\n    # self.isRunning es la condicion que indica si el carro esta en capacidad de movimiento\r\n    # self.direction es la direccion de movimiento del carro\r\n    # self.posX y self.posY son las coordenadas de posicion del carro dentro de la ventana\r\n    # self.vectors es una serie de multiplicadores para calcular posiciones siguientes\r\n    # self.possibleDirections son los puntos cardinales posibles de movimiento, independiente de los vecinos de cada punto\r\n    def __init__(self, circuit, screen, prgmStatus, color, radius=5, initSpeed=10):\r\n        # Validacion de circuit\r\n        if type(circuit) != Circuit:\r\n            print(\"Car.__init__: circuit no es tipo Circuito, se asigna None.\")\r\n            self.circuit = None\r\n\r\n        else:\r\n            self.circuit = circuit\r\n\r\n        # Validacion de screen\r\n        if type(screen) != pg.Surface:\r\n            print(\"Car.__init__: screen no es tipo pygame.Surface, se asigna None.\")\r\n            self.circuit = None\r\n\r\n        else:\r\n            self.screen = screen\r\n\r\n        # Validacion de prgmStatus\r\n        if type(prgmStatus) != classes.ProgramStatus:\r\n            print(\"Car.__init__: screen no es tipo classes.ProgramStatus, se asigna None.\")\r\n            self.prgmStatus = None\r\n\r\n        else:\r\n            self.prgmStatus = prgmStatus\r\n\r\n        # Validacion de color\r\n        if type(color) != tuple or len(color) != 3:\r\n            print(\"Car.__init__: color no es valido, se asignara color blanco.\")\r\n            self.color = (255, 255, 255)\r\n\r\n        else:\r\n            self.color = color\r\n\r\n            for chValue in color:\r\n                if type(chValue) != int or chValue < 0 or chValue > 255:\r\n                    print(\"Car.__init__: alguno de los valores de color no es valido, se asigna color blanco.\")\r\n                    self.color = (255, 255, 255)\r\n\r\n        # Validacion de radius\r\n        if (type(radius) != float and type(radius) != int) or radius < 0:\r\n            print(\"Car.__init__: radius no es numero real positivo, se asigna valor de 10.\")\r\n            self.radius = 10\r\n\r\n        else:\r\n            self.radius = radius\r\n\r\n        # Validacion de initSpeed\r\n        if (type(initSpeed) != float and type(initSpeed) != int) or initSpeed < 0:\r\n            print(\"Car.__init__: initSpeed no es numero real positivo, se asigna valor de 1.\")\r\n            self.radius = 1\r\n\r\n        else:\r\n            self.radius = radius\r\n\r\n        # Declaracion de atributos\r\n        self.firstPoint = circuit.getPoints()[0]\r\n        self.lastPoint = self.firstPoint\r\n        self.nextPoint = self.firstPoint.getNeighbors()[\"N\"]\r\n\r\n        self.speed = initSpeed  # pix/s\r\n        self.minSpeed = 10 # pix/s\r\n        self.diffSpeed = 200 # pix/s\r\n        self.isRunning = True\r\n        self.direction = \"N\"\r\n        self.posX = self.lastPoint.getCoords()[\"x\"]\r\n        self.posY = self.lastPoint.getCoords()[\"y\"]\r\n        self.vectors = {\"N\": (0, -1), \"E\": (1, 0), \"S\": (0, 1), \"O\": (-1, 0)}\r\n\r\n        self.possibleDirections = (\"N\", \"E\", \"S\", \"O\")\r\n        self.commandsByNum = {0: (),  # N/A\r\n                              1: (0, 0),  # Gira a la derecha y acelera\r\n                              2: (0, 1),  # Gira a la izquierda y acelera\r\n                              3: (1, 0),  # Gira a la derecha y desacelera\r\n                              4: (1, 1),  # Gira a la izquierda y desacelera\r\n                              5: (0,),  # Detención\r\n                              6: (1,)}  # Puesta en marcha\r\n\r\n        # len 0: comando invalido\r\n        # len 1: solo accion (action)\r\n        # len 2: cambiar veloc y direccion (velUp, turnR)\r\n\r\n    # Metodo para calcular la posicion siguiente del carro y actualizar el dibujo\r\n    def move(self):\r\n        # https://www.youtube.com/watch?v=YOCt8nsQqEo&ab_channel=ClearCode\r\n        if not self.isRunning:\r\n            currTime = pg.time.get_ticks()\r\n            self.prgmStatus.timeLeft = round(10000 - (currTime - self.prgmStatus.stopTime), 3) / 1000\r\n\r\n            if self.prgmStatus.timeLeft <= 0:\r\n                self.prgmStatus.timeLeft = 0\r\n\r\n            #Espera a que hayan pasado 10s y solo reanuda movimiento cuando se elige puesta en marcha\r\n            if self.prgmStatus.timeLeft <= 0 and self.prgmStatus.nextCommandNum == 6:\r\n                self.isRunning = True\r\n\r\n            self.updateGraphic()\r\n            return\r\n\r\n        # Posiciones siguientes\r\n        trueSpeed = self.speed / self.prgmStatus.framerate # pix/seg * seg/frame = pix/frame\r\n\r\n        tempX = self.posX + self.vectors[self.direction][0] * trueSpeed\r\n        tempY = self.posY + self.vectors[self.direction][1] * trueSpeed\r\n\r\n        #print(trueSpeed, tempX, tempY)\r\n\r\n        gotToNext = False\r\n\r\n        # Verifica si es movimiento vertical u horizontal\r\n        if self.direction == \"N\" or self.direction == \"S\":\r\n            # Verifica que no sobrepase el punto destino\r\n            if self.vectors[self.direction][1] * (tempY - self.nextPoint.getCoords()[\"y\"]) >= 0:\r\n                self.posY = self.nextPoint.getCoords()[\"y\"]\r\n                gotToNext = True\r\n\r\n            else:\r\n                self.posY = tempY\r\n\r\n        else: #E u O\r\n            # Verfica que no sobrepase el punto destino\r\n            if self.vectors[self.direction][0] * (tempX - self.nextPoint.getCoords()[\"x\"]) >= 0:\r\n                self.posX = self.nextPoint.getCoords()[\"x\"]\r\n                gotToNext = True\r\n\r\n            else:\r\n                self.posX = tempX\r\n\r\n        # Se cambia de direccion si el carro llego a su punto destino\r\n        if gotToNext:\r\n            self.decideNextMovement()\r\n\r\n        # Se mueve y dibuja el carro en screen\r\n        self.updateGraphic()\r\n\r\n    # Metodo para decidir el siguiente movimiento en una interseccion\r\n    # Si no hay un comando disponible, elige entre una lista de direcciones predeterminadas\r\n    def decideNextMovement(self):\r\n        commandNum = self.prgmStatus.nextCommandNum\r\n\r\n        if commandNum == None:  # No se tiene un comando siguiente, el carro circula normalmente\r\n            self.moveNormally()\r\n            return\r\n\r\n        # Si no es un numero de comando valido\r\n        if type(commandNum) != int or commandNum < 0 or commandNum > 6:\r\n            print(\"Car.applyCommand: commandNum debe ser un entero entre 0 y 6 inclusives.\")\r\n            return\r\n\r\n        # Si el numero de comando corresponde a movimiento sin comando\r\n        if commandNum == 0:\r\n            self.moveNormally()\r\n            return\r\n\r\n        # Decodificacion\r\n        command = self.commandsByNum[commandNum]\r\n\r\n        # Si el comando no tiene longitud, no hay informacion\r\n        if len(command) == 0:\r\n            print(\"Car.decideNextMovement: comando no tiene una forma valido (longitud 0).\")\r\n            self.moveNormally()\r\n            return\r\n\r\n        currPoint = self.nextPoint\r\n\r\n        if currPoint.getNumConns() <= 2:  # no es interseccion, sino curva o recta\r\n            self.moveNormally()\r\n            return\r\n\r\n        if len(command) == 1:  # (action)\r\n            if command[0] == 0:  # detencion\r\n                # https://www.youtube.com/watch?v=YOCt8nsQqEo&ab_channel=ClearCode\r\n                self.prgmStatus.stopTime = pg.time.get_ticks()\r\n                self.isRunning = False\r\n\r\n            elif command[0] == 1:  # Puesta en marcha\r\n                self.moveNormally()\r\n\r\n        elif len(command) == 2:  # (velUp, direction) velUp = 0: acel, turnR = 0: 90deg cw\r\n            velUp, direction = command\r\n\r\n            newSpeed = self.speed + round(self.diffSpeed * (1 - 2 * velUp), 2)  # (1 - 2 * velUp) unicamente tiene valores +-1\r\n\r\n            if newSpeed < self.minSpeed:  # Si la velocidad no permite un funcionamiento adecuado del carro\r\n                print(\"Car.decideNextMovement: cambio de velocidad no es válido.\")\r\n\r\n            else:\r\n                self.speed = newSpeed\r\n\r\n            self.atIntersectionMoveTo(direction)\r\n\r\n        print(\"Comando anterior: \" + str(commandNum) + \"-\" + self.prgmStatus.commandsByNum[commandNum])\r\n        self.prgmStatus.resetCmdNumber()  # Se reinicia el comando y vuelve al inicial\r\n        return\r\n\r\n    # Calculo de movimiento en interseccion donde se desea mover a la izquierda (90deg cw) o derecha (90deg ccw)\r\n    # direction es un valor entero/booleano donde 0 es giro a derecha y 1 es a la izquierda\r\n    def atIntersectionMoveTo(self, direction):\r\n\r\n        # Validacion de direction\r\n        if type(direction) != int or (direction != 0 and direction != 1):\r\n            print(\"Car.moveTo: direction no es entero o 0 o 1.\")\r\n            self.moveNormally()\r\n            return\r\n\r\n        rearrangedDirs = self.rearrangeDirections()  # (-:recto, 0: derecha, 1: izquierda)\r\n        nextDirecc = rearrangedDirs[direction + 1]\r\n\r\n        self.lastPoint = self.nextPoint\r\n        neighbors = self.lastPoint.getNeighbors()\r\n\r\n        if nextDirecc in neighbors:\r\n            self.nextPoint = neighbors[nextDirecc]\r\n            self.direction = nextDirecc\r\n\r\n        else:\r\n            self.moveNormally()\r\n\r\n        return\r\n\r\n    # Metodo para cambiar la direccion del carro cuando este llega al punto destino\r\n    # Toma como direccion predeterminada la previa, sino gira a la derecha, sino a la izquierda\r\n    def moveNormally(self):\r\n        self.lastPoint = self.nextPoint\r\n        neighbors = self.lastPoint.getNeighbors()\r\n\r\n        for direction in self.getFavoredDirections():\r\n            for neighborDirecc in neighbors:\r\n                if neighborDirecc == direction:\r\n                    self.nextPoint = neighbors[neighborDirecc]\r\n                    self.direction = neighborDirecc\r\n                    return\r\n\r\n    # Para cada punto y direccion del carro, devuelve una lista con direcciones posteriores del carro en orden de prioridad\r\n    # Simplemente llama a la funcion self.rearrangeDirections y devuelve su resultado, lo que cambia es el nombre\r\n    # temp es una lista con strings de las direcciones dichas\r\n    def getFavoredDirections(self):\r\n        return self.rearrangeDirections()\r\n\r\n    # Metodo para obtener las direcciones (recto, derecha, izquierda), desde la perspectiva del carro\r\n    # temp es una lista con strings de las direcciones dichas\r\n    def rearrangeDirections(self):\r\n        temp = list(self.possibleDirections)\r\n        numDirections = len(self.possibleDirections)\r\n        lastDirIx = temp.index(self.direction)\r\n\r\n        # Hace un desplazamiento de la lista para que su primer elemento sea el de direccion previa\r\n        temp = temp[lastDirIx:] + temp[:lastDirIx]\r\n        lastDirIx = 0\r\n        # Remueve la direccion que devuelve el carro al punto previo\r\n        oppIx = (lastDirIx + 2) % numDirections\r\n        temp.pop(oppIx)\r\n\r\n        return temp\r\n\r\n    # Metodo para dibujar el carro en su nueva posicion dentro de screen\r\n    def updateGraphic(self):\r\n        pg.draw.circle(self.screen, self.color, (self.posX, self.posY), self.radius)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Entregable/graphicsClasses.py b/Entregable/graphicsClasses.py
+--- a/Entregable/graphicsClasses.py	(revision b79ae468d8abcb1a0d18250534304e4d5d8f89bf)
++++ b/Entregable/graphicsClasses.py	(date 1611705410768)
+@@ -237,7 +237,7 @@
+     # Metodo constructor
+     # self.circuit es el circuito que recorre el carro
+     # self.screen es la pantalla donde se dibuja carro
+-    # self.prgmStatus se usara para monitorear el estado del programa
++    # self.status se usara para monitorear el estado del programa
+     # self.color es el color del carro,                            temporal****
+     # self.radius es el radio del carro representado como circulo, temporal****
+     # initSpeed es la velocidad inicial del carro, pix por seg
+@@ -250,7 +250,7 @@
+     # self.posX y self.posY son las coordenadas de posicion del carro dentro de la ventana
+     # self.vectors es una serie de multiplicadores para calcular posiciones siguientes
+     # self.possibleDirections son los puntos cardinales posibles de movimiento, independiente de los vecinos de cada punto
+-    def __init__(self, circuit, screen, prgmStatus, color, radius=5, initSpeed=10):
++    def __init__(self, circuit, screen, status, color, radius=5, initSpeed=10):
+         # Validacion de circuit
+         if type(circuit) != Circuit:
+             print("Car.__init__: circuit no es tipo Circuito, se asigna None.")
+@@ -267,13 +267,13 @@
+         else:
+             self.screen = screen
+ 
+-        # Validacion de prgmStatus
+-        if type(prgmStatus) != classes.ProgramStatus:
++        # Validacion de status
++        if type(status) != classes.ProgramStatus:
+             print("Car.__init__: screen no es tipo classes.ProgramStatus, se asigna None.")
+-            self.prgmStatus = None
++            self.status = None
+ 
+         else:
+-            self.prgmStatus = prgmStatus
++            self.status = status
+ 
+         # Validacion de color
+         if type(color) != tuple or len(color) != 3:
+@@ -311,7 +311,7 @@
+ 
+         self.speed = initSpeed  # pix/s
+         self.minSpeed = 10 # pix/s
+-        self.diffSpeed = 200 # pix/s
++        self.diffSpeed = 20 # pix/s
+         self.isRunning = True
+         self.direction = "N"
+         self.posX = self.lastPoint.getCoords()["x"]
+@@ -336,20 +336,21 @@
+         # https://www.youtube.com/watch?v=YOCt8nsQqEo&ab_channel=ClearCode
+         if not self.isRunning:
+             currTime = pg.time.get_ticks()
+-            self.prgmStatus.timeLeft = round(10000 - (currTime - self.prgmStatus.stopTime), 3) / 1000
++            self.status.timeLeft = round(10000 - (currTime - self.status.stopTime), 3) / 1000
+ 
+-            if self.prgmStatus.timeLeft <= 0:
+-                self.prgmStatus.timeLeft = 0
++            if self.status.timeLeft <= 0:
++                self.status.timeLeft = 0
+ 
+             #Espera a que hayan pasado 10s y solo reanuda movimiento cuando se elige puesta en marcha
+-            if self.prgmStatus.timeLeft <= 0 and self.prgmStatus.nextCommandNum == 6:
++            if self.status.timeLeft <= 0 and self.status.nextCommandNum == 6:
+                 self.isRunning = True
++                self.status.carIsRunning = True
+ 
+             self.updateGraphic()
+             return
+ 
+         # Posiciones siguientes
+-        trueSpeed = self.speed / self.prgmStatus.framerate # pix/seg * seg/frame = pix/frame
++        trueSpeed = self.speed / self.status.framerate # pix/seg * seg/frame = pix/frame
+ 
+         tempX = self.posX + self.vectors[self.direction][0] * trueSpeed
+         tempY = self.posY + self.vectors[self.direction][1] * trueSpeed
+@@ -387,7 +388,7 @@
+     # Metodo para decidir el siguiente movimiento en una interseccion
+     # Si no hay un comando disponible, elige entre una lista de direcciones predeterminadas
+     def decideNextMovement(self):
+-        commandNum = self.prgmStatus.nextCommandNum
++        commandNum = self.status.nextCommandNum
+ 
+         if commandNum == None:  # No se tiene un comando siguiente, el carro circula normalmente
+             self.moveNormally()
+@@ -421,8 +422,9 @@
+         if len(command) == 1:  # (action)
+             if command[0] == 0:  # detencion
+                 # https://www.youtube.com/watch?v=YOCt8nsQqEo&ab_channel=ClearCode
+-                self.prgmStatus.stopTime = pg.time.get_ticks()
++                self.status.stopTime = pg.time.get_ticks()
+                 self.isRunning = False
++                self.status.carIsRunning = False
+ 
+             elif command[0] == 1:  # Puesta en marcha
+                 self.moveNormally()
+@@ -440,8 +442,8 @@
+ 
+             self.atIntersectionMoveTo(direction)
+ 
+-        print("Comando anterior: " + str(commandNum) + "-" + self.prgmStatus.commandsByNum[commandNum])
+-        self.prgmStatus.resetCmdNumber()  # Se reinicia el comando y vuelve al inicial
++        print("Comando anterior: " + str(commandNum) + "-" + self.status.commandsByNum[commandNum][1])
++        self.status.resetCmdNumber()  # Se reinicia el comando y vuelve al inicial
+         return
+ 
+     # Calculo de movimiento en interseccion donde se desea mover a la izquierda (90deg cw) o derecha (90deg ccw)
+Index: Entregable/classes.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#Clase que mantiene global variables globales, y presenta el estado del programa para tomar decisiones\r\nclass ProgramStatus():\r\n\r\n    #Metodo constructor\r\n    def __init__(self):\r\n\r\n        self.idleCar = False\r\n\r\n        #Imagen actual recuperada del feed de camara\r\n        self.currImage = None\r\n\r\n        #Atributo correspondiente a si el interfaz de pygame esta corriendo\r\n        self.running = True\r\n\r\n        #Numero de comando y descripcion\r\n        self.commandsByNum = {0: \"N/A\",\r\n                              1: \"Gira a la derecha y acelera\",\r\n                              2: \"Gira a la izquierda y acelera\",\r\n                              3: \"Gira a la derecha y desacelera\",\r\n                              4: \"Gira a la izquierda y desacelera\",\r\n                              5: \"Detención\",\r\n                              6: \"Puesta en marcha\"}\r\n\r\n        #0: N/A\r\n        #1: \"Gira a la derecha y acelera\"\r\n        #2: \"Gira a la izquierda y acelera\"\r\n        #3: \"Gira a la derecha y desacelera\"\r\n        #4: \"Gira a la izquierda y desacelera\"\r\n        #5: \"Detención\"\r\n        #6: \"Puesta en marcha\"\r\n\r\n        #Numero y texto del comando\r\n        self.nextCommandNum = 0\r\n        self.nextCommand = \"N/A\"\r\n\r\n        #Reloj global\r\n        self.clock = None #Tipo pygame.time.Clock\r\n\r\n        #Tiempos usados para comando de detencion\r\n        self.stopTime = 0 #entero, milisegundos\r\n        self.timeLeft = 0 #en segundos\r\n\r\n        #Taza de refrescado\r\n        self.framerate = 60 #frames p sec\r\n\r\n    #Metodo para cambiar el comando en algunas variables de la instancia\r\n    #El numero number puede ser:\r\n    # 0: N/A\r\n    # 1: \"Gira a la derecha y acelera\"\r\n    # 2: \"Gira a la izquierda y acelera\"\r\n    # 3: \"Gira a la derecha y desacelera\"\r\n    # 4: \"Gira a la izquierda y desacelera\"\r\n    # 5: \"Detención\"\r\n    # 6: \"Puesta en marcha\"\r\n    def changeNextCmd(self, number):\r\n        #Validacion de number, caso nulo 0 solo se considera si no se ha detectado ningun comando\r\n        if type(number) == int and number >= 1 and number <= 6:\r\n            self.nextCommandNum = number\r\n            self.nextCommand = self.commandsByNum[number]\r\n\r\n    #Metodo para reiniciar los atributos relacionados al comando\r\n    def resetCmdNumber(self):\r\n            self.nextCommandNum = 0\r\n            self.nextCommand = self.commandsByNum[0]\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Entregable/classes.py b/Entregable/classes.py
+--- a/Entregable/classes.py	(revision b79ae468d8abcb1a0d18250534304e4d5d8f89bf)
++++ b/Entregable/classes.py	(date 1611705256456)
+@@ -4,22 +4,28 @@
+     #Metodo constructor
+     def __init__(self):
+ 
+-        self.idleCar = False
++        self.carIsRunning = True
+ 
+         #Imagen actual recuperada del feed de camara
+         self.currImage = None
+ 
++        # Conteo de detección consecutiva del mismo comando
++        self.sameCommandCount = 0
++
++        # Conteo máximo para que un comando se mantenga activo hasta la siguiente intersección
++        self.sameCommandMaxCount = 5
++
+         #Atributo correspondiente a si el interfaz de pygame esta corriendo
+         self.running = True
+ 
+         #Numero de comando y descripcion
+-        self.commandsByNum = {0: "N/A",
+-                              1: "Gira a la derecha y acelera",
+-                              2: "Gira a la izquierda y acelera",
+-                              3: "Gira a la derecha y desacelera",
+-                              4: "Gira a la izquierda y desacelera",
+-                              5: "Detención",
+-                              6: "Puesta en marcha"}
++        self.commandsByNum = {0: ("N/A", "N/A"),
++                              1: ("Gira a la derecha y acelera", "Der, Acc"),
++                              2: ("Gira a la izquierda y acelera", "Izq, Acc"),
++                              3: ("Gira a la derecha y desacelera", "Der, Des"),
++                              4: ("Gira a la izquierda y desacelera", "Izq, Des"),
++                              5: ("Detención", "Det"),
++                              6: ("Puesta en marcha", "Cont")}
+ 
+         #0: N/A
+         #1: "Gira a la derecha y acelera"
+@@ -56,12 +62,16 @@
+         #Validacion de number, caso nulo 0 solo se considera si no se ha detectado ningun comando
+         if type(number) == int and number >= 1 and number <= 6:
+             self.nextCommandNum = number
+-            self.nextCommand = self.commandsByNum[number]
++            self.nextCommand = self.commandsByNum[number][1]
+ 
+     #Metodo para reiniciar los atributos relacionados al comando
+     def resetCmdNumber(self):
+-            self.nextCommandNum = 0
+-            self.nextCommand = self.commandsByNum[0]
++        self.nextCommandNum = 0
++        self.nextCommand = self.commandsByNum[0][1]
++        self.sameCommandCount = 0
++
++    def resetSameCount(self):
++        self.sameCommandCount = 0
+ 
+ 
+ 
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"e1688837-b82a-4944-9c6e-a11b3d65c5b7\" name=\"Default Changelist\" comment=\"\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/Entregable/funRecono.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Entregable/funRecono.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/Videos/New Text Document.txt\" beforeDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"1nIQdD8KtRkSoMsZrEfJm4v66oV\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">\r\n    <property name=\"RunOnceActivity.OpenProjectViewOnStart\" value=\"true\" />\r\n    <property name=\"RunOnceActivity.ShowReadmeOnStart\" value=\"true\" />\r\n    <property name=\"last_opened_file_path\" value=\"$PROJECT_DIR$/Archivos temporales\" />\r\n    <property name=\"settings.editor.selected.configurable\" value=\"preferences.fileTypes\" />\r\n  </component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"D:\\OneDrive - Estudiantes ITCR\\Documentos\\TEC\\2020 - 2S\\Sistemas de Visión Gr. 1\\Proyecto\\ASV-PF-SGAV\\Archivos temporales\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"Python.interface (2)\">\r\n    <configuration name=\"funRecono\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"ASV-PF-SGAV\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/funRecono.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"interface (2)\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"ASV-PF-SGAV\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/Entregable\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/Entregable/interface.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"interface\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"ASV-PF-SGAV\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/interface.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"main\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Proyecto\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/../../../Inteligencia Artificial Gr. 1/Proyecto/Proyecto\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/../../../Inteligencia Artificial Gr. 1/Proyecto/Proyecto/main.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"pruebaSalPimienta\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"ASV-PF-SGAV\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/Archivos temporales\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/Archivos temporales/pruebaSalPimienta.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"Python.interface (2)\" />\r\n        <item itemvalue=\"Python.interface\" />\r\n        <item itemvalue=\"Python.main\" />\r\n        <item itemvalue=\"Python.pruebaSalPimienta\" />\r\n        <item itemvalue=\"Python.funRecono\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"e1688837-b82a-4944-9c6e-a11b3d65c5b7\" name=\"Default Changelist\" comment=\"\" />\r\n      <created>1611075211012</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1611075211012</updated>\r\n    </task>\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n    <option name=\"oldMeFiltersMigrated\" value=\"true\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision b79ae468d8abcb1a0d18250534304e4d5d8f89bf)
++++ b/.idea/workspace.xml	(date 1611704677432)
+@@ -3,8 +3,10 @@
+   <component name="ChangeListManager">
+     <list default="true" id="e1688837-b82a-4944-9c6e-a11b3d65c5b7" name="Default Changelist" comment="">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Entregable/classes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Entregable/classes.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Entregable/funRecono.py" beforeDir="false" afterPath="$PROJECT_DIR$/Entregable/funRecono.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Videos/New Text Document.txt" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Entregable/graphicsClasses.py" beforeDir="false" afterPath="$PROJECT_DIR$/Entregable/graphicsClasses.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Entregable/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/Entregable/interface.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -176,4 +178,7 @@
+     </option>
+     <option name="oldMeFiltersMigrated" value="true" />
+   </component>
++  <component name="VcsManagerConfiguration">
++    <option name="LAST_COMMIT_MESSAGE" value="" />
++  </component>
+ </project>
+\ No newline at end of file

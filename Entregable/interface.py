@@ -20,7 +20,7 @@ windowCaption = "Proyecto SV - Simulador de Pista"
 pathWidth = 55
 
 # Constantes de movimiento
-speed = 300
+speed = 200
 
 # Colores
 black = (0, 0, 0)
@@ -144,7 +144,7 @@ def main():
         # Texto de siguiente movimiento
         # https://stackoverflow.com/questions/20842801/how-to-display-text-in-pygame
         # You can use `render` and then blit the text surface ...
-        text_surface, rect = gameFont.render("Sig: " + status.nextCommand, textColor)
+        text_surface, rect = gameFont.render("Sig: " + status.nextCommand + " (" + str(status.sameCommandCount) + ")", textColor)
         screen.blit(text_surface, (600, 40))
 
         # Texto de velocidad del carro

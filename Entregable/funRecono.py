@@ -99,40 +99,6 @@ def recono(img):
     #print(comando)
     return comando,img
 
-# commandsByNum = {0: "N/A",
-#                 1: "Gira a la derecha y acelera",
-#                 2: "Gira a la izquierda y acelera",
-#                 3: "Gira a la derecha y desacelera",
-#                 4: "Gira a la izquierda y desacelera",
-#                 5: "Detención",
-#                 6: "Puesta en marcha"}
-#
-#
-#
-# scale_percent = 35 # percent of original size
-
-# for i in range(1, 16 + 1):
-#     numFile = "0" + str(i) if i < 10 else str(i)
-#     print(numFile)
-#
-#     img = cv2.imread("Fichas/t" + numFile + ".jpg")
-#
-#     width = int(img.shape[1] * scale_percent / 100)
-#     height = int(img.shape[0] * scale_percent / 100)
-#     dim = (width, height)
-#
-#     # resize image
-#     resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-#
-#     res = recono(img)
-#
-#     print(res, commandsByNum[res[0]])
-#     cv2.imshow('image', resized)
-#
-#     cv2.waitKey(0)
-#     cv2.destroyAllWindows()
-
-
 
 def camera(status):
     # https://www.geeksforgeeks.org/python-opencv-capture-video-from-camera/
@@ -151,13 +117,27 @@ def camera(status):
         # cv2.imshow('frame', frame)
 
         if ret == True:
-            command = recono(frame)
+            lastCommand = status.nextCommandNum
             #print("comando desde recono", command)
+
+            if status.sameCommandCount <= status.sameCommandMaxCount:
+                command = recono(frame)
+
+                if command != 0 and command == lastCommand:
+                    if status.carIsRunning:
+                        status.sameCommandCount += 1
+
+                    elif command == 6: #Si el carro esta detenido, solo cuenta los de puesta en marcha
+                        status.sameCommandCount += 1
+
+
+                else:
+                    status.resetSameCount()
+
+                status.changeNextCmd(command)
 
             frame = np.flip(frame, 1) #Refleja imagen respecto al eje y, para facilitar el posicionamiento de las figuras
             status.currImage = frame
-
-            status.changeNextCmd(command)
 
         # the 'q' button is set as the
         # quitting button you may use any
