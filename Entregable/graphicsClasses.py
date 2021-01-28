@@ -309,9 +309,10 @@ class Car:
         self.lastPoint = self.firstPoint
         self.nextPoint = self.firstPoint.getNeighbors()["N"]
 
-        self.speed = initSpeed  # pix/s
-        self.minSpeed = 10 # pix/s
-        self.diffSpeed = 20 # pix/s
+
+        self.minSpeed = 100 # pix/s
+        self.diffSpeed = 5 # pix/s
+        self.speed = initSpeed if initSpeed >= self.minSpeed else self.minSpeed # pix/s
         self.isRunning = True
         self.direction = "N"
         self.posX = self.lastPoint.getCoords()["x"]
@@ -334,6 +335,7 @@ class Car:
     # Metodo para calcular la posicion siguiente del carro y actualizar el dibujo
     def move(self):
         # https://www.youtube.com/watch?v=YOCt8nsQqEo&ab_channel=ClearCode
+        #Si el ultimo comando fue de detencion
         if not self.isRunning:
             currTime = pg.time.get_ticks()
             self.status.timeLeft = round(10000 - (currTime - self.status.stopTime), 3) / 1000
@@ -388,20 +390,24 @@ class Car:
     # Metodo para decidir el siguiente movimiento en una interseccion
     # Si no hay un comando disponible, elige entre una lista de direcciones predeterminadas
     def decideNextMovement(self):
-        commandNum = self.status.nextCommandNum
+        commandNum = self.status.activeCommandNum
 
         if commandNum == None:  # No se tiene un comando siguiente, el carro circula normalmente
             self.moveNormally()
+            self.status.resetCmdNumber()
             return
 
         # Si no es un numero de comando valido
         if type(commandNum) != int or commandNum < 0 or commandNum > 6:
             print("Car.applyCommand: commandNum debe ser un entero entre 0 y 6 inclusives.")
+            self.moveNormally()
+            self.status.resetCmdNumber()
             return
 
         # Si el numero de comando corresponde a movimiento sin comando
         if commandNum == 0:
             self.moveNormally()
+            self.status.resetCmdNumber()
             return
 
         # Decodificacion
@@ -411,12 +417,19 @@ class Car:
         if len(command) == 0:
             print("Car.decideNextMovement: comando no tiene una forma valido (longitud 0).")
             self.moveNormally()
+            self.status.resetCmdNumber()
             return
 
         currPoint = self.nextPoint
 
         if currPoint.getNumConns() <= 2:  # no es interseccion, sino curva o recta
             self.moveNormally()
+            return
+
+        #Si el ultimo comando no se ha mantenido lo suficiente
+        if not self.status.isCommandActive():
+            self.moveNormally()
+            self.status.resetCmdNumber()
             return
 
         if len(command) == 1:  # (action)
@@ -442,7 +455,7 @@ class Car:
 
             self.atIntersectionMoveTo(direction)
 
-        print("Comando anterior: " + str(commandNum) + "-" + self.status.commandsByNum[commandNum][1])
+        print("Comando anterior: " + str(commandNum) + "-" + self.status.commandsByNum[commandNum][0])
         self.status.resetCmdNumber()  # Se reinicia el comando y vuelve al inicial
         return
 

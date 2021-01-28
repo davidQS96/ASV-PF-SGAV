@@ -36,6 +36,7 @@ def subborde(lineas,img):
     corte = cv2.bitwise_or(img, img, mask=maskc)
     corte = cv2.cvtColor(corte, cv2.COLOR_RGB2GRAY)
     return corte
+    return  valido, comando2
 
 # Reconocimiento de instrucciones
 def recono(img):
@@ -126,7 +127,7 @@ def recono(img):
                 cv2.drawContours(img, [approx], 0, (0, 0, 0), 5)  
 
     #print(comando)
-    return comando,img
+    return comando, img
 
 
 def camera(status):
@@ -156,16 +157,16 @@ def camera(status):
                     if status.carIsRunning:
                         status.sameCommandCount += 1
 
-                    elif command == 6: #Si el carro esta detenido, solo cuenta los de puesta en marcha
-                        status.sameCommandCount += 1
 
+        if ret == True:
+            lastCommand = status.nextCommandNum
 
-                else:
-                    status.resetSameCount()
+            command  = recono(frame)[0]
 
-                status.changeNextCmd(command)
+            status.changeNextCmd(command)
 
             frame = np.flip(frame, 1) #Refleja imagen respecto al eje y, para facilitar el posicionamiento de las figuras
+
             status.currImage = frame
 
         # the 'q' button is set as the

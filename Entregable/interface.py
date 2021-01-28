@@ -20,7 +20,7 @@ windowCaption = "Proyecto SV - Simulador de Pista"
 pathWidth = 55
 
 # Constantes de movimiento
-speed = 200
+speed = 150
 
 # Colores
 black = (0, 0, 0)
@@ -28,8 +28,8 @@ lightBlue = (183, 255, 247)
 darkGreen = (0, 180, 65)
 lightGrey = (150, 150, 150)
 red = (255, 0, 0)
-blue = (0, 0, 255)
 green = (0, 255, 0)
+blue = (0, 0, 255)
 
 bgColor = darkGreen  # For the background color of your window
 streetColor = black
@@ -144,20 +144,20 @@ def main():
         # Texto de siguiente movimiento
         # https://stackoverflow.com/questions/20842801/how-to-display-text-in-pygame
         # You can use `render` and then blit the text surface ...
-        text_surface, rect = gameFont.render("Sig: " + status.nextCommand + " (" + str(status.sameCommandCount) + ")", textColor)
-        screen.blit(text_surface, (600, 40))
+        next_surface, rect = gameFont.render("Sig: " + status.commandsByNum[status.nextCommandNum][0] + " (" + str(status.sameCommandCount) + ")", textColor)
+        screen.blit(next_surface, (600, 40)) #Original: 600, 40, #440, 450
 
         # Texto de velocidad del carro
-        text_surface2, rect2 = gameFont.render("Veloc: " + str(car.speed) + " pix/s", textColor)
-        screen.blit(text_surface2, (600, 70))
+        vel_surface, rect2 = gameFont.render("Veloc: " + str(car.speed) + " pix/s", textColor)
+        screen.blit(vel_surface, (600, 70)) #Original: 600, 70,
 
         # Texto de cuadros por segundo
-        text_surface3, rect2 = gameFont.render("FPS: " + str(round(fpsShown, 1)), textColor)
-        screen.blit(text_surface3, (1000, 40))
+        fps_surface, rect3 = gameFont.render("FPS: " + str(round(fpsShown, 1)), textColor)
+        screen.blit(fps_surface, (1000, 40)) #Original: 1000, 40,
 
         # Texto de temporizador
-        text_surface4, rect2 = gameFont.render("Reloj: " + str(status.timeLeft) + " s", textColor)
-        screen.blit(text_surface4, (1000, 70))
+        timer_surface, rect4 = gameFont.render("Reloj: " + str(status.timeLeft) + " s", textColor)
+        screen.blit(timer_surface, (1000, 70)) #Original: 1000, 70, #440, 480
 
         # Se mueve carro
         car.move()
@@ -181,6 +181,22 @@ def main():
             resized = np.swapaxes(resized, 0, 1)
             newSurface = pg.pixelcopy.make_surface(resized)
             screen.blit(newSurface, (54, 450))
+
+        # Texto de comando y tiempo de detencion
+        cmdText2 = "Sig: " + status.commandsByNum[status.activeCommandNum][1]
+
+        if status.sameCommandCount < status.sameCommandMaxCount:
+            cmdText2 += " (" + str(status.sameCommandCount) + ")"
+
+        else:
+            cmdText2 += " (Max: " + str(status.sameCommandMaxCount) + ")"
+
+
+        if status.nextCommandNum == 5:
+            cmdText2 += "[" + str(status.timeLeft) + "]"
+
+        cmdT_surface, rect = gameFont.render(cmdText2, green)
+        screen.blit(cmdT_surface, (70, 630)) #Original: 70, 630,
 
         # Actualiza ventana
         pg.display.flip()
