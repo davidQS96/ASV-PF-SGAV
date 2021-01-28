@@ -156,6 +156,8 @@ def camera(status):
                 if command != 0 and command == lastCommand:
                     if status.carIsRunning:
                         status.sameCommandCount += 1
+=======
+>>>>>>> Stashed changes
 
 
         if ret == True:
