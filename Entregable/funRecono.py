@@ -150,7 +150,7 @@ def camera(status):
             #print("comando desde recono", command)
 
             if status.sameCommandCount <= status.sameCommandMaxCount:
-                command = recono(frame)
+                command = recono(frame)[0]
 
                 if command != 0 and command == lastCommand:
                     if status.carIsRunning:
