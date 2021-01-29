@@ -2,8 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e1688837-b82a-4944-9c6e-a11b3d65c5b7" name="Default Changelist" comment="Commit &#10;&#10;+Se agrego un conteo para aceptar el siguiente comando&#10;+Este conteo toma en cuenta si el comando anterior es de detencion y necesita un comando de puesta en marcha como el siguiente">
+      <change beforePath="$PROJECT_DIR$/.idea/ASV-PF-SGAV.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ASV-PF-SGAV.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Entregable/classes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Entregable/miscClasses.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Entregable/funRecono.py" beforeDir="false" afterPath="$PROJECT_DIR$/Entregable/funRecono.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Entregable/graphicsClasses.py" beforeDir="false" afterPath="$PROJECT_DIR$/Entregable/graphicsClasses.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Entregable/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/Entregable/interface.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +24,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="1nIQdD8KtRkSoMsZrEfJm4v66oV" />
   <component name="ProjectViewState">

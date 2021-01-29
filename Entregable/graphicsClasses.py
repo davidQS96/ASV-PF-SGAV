@@ -1,6 +1,6 @@
 import pygame as pg
 
-import classes
+import miscClasses
 
 
 # Clase para guardar cada punto del circuito
@@ -268,7 +268,7 @@ class Car:
             self.screen = screen
 
         # Validacion de status
-        if type(status) != classes.ProgramStatus:
+        if type(status) != miscClasses.ProgramStatus:
             print("Car.__init__: screen no es tipo classes.ProgramStatus, se asigna None.")
             self.status = None
 
@@ -311,7 +311,7 @@ class Car:
 
 
         self.minSpeed = 100 # pix/s
-        self.diffSpeed = 5 # pix/s
+        self.diffSpeed = 2 # pix/s
         self.speed = initSpeed if initSpeed >= self.minSpeed else self.minSpeed # pix/s
         self.isRunning = True
         self.direction = "N"
@@ -427,9 +427,10 @@ class Car:
             return
 
         #Si el ultimo comando no se ha mantenido lo suficiente
-        if not self.status.isCommandActive():
+        if not self.status.cmdIsActive:
             self.moveNormally()
             self.status.resetCmdNumber()
+            self.status.resetActiveCmd()
             return
 
         if len(command) == 1:  # (action)
@@ -457,6 +458,7 @@ class Car:
 
         print("Comando anterior: " + str(commandNum) + "-" + self.status.commandsByNum[commandNum][0])
         self.status.resetCmdNumber()  # Se reinicia el comando y vuelve al inicial
+        self.status.resetActiveCmd()
         return
 
     # Calculo de movimiento en interseccion donde se desea mover a la izquierda (90deg cw) o derecha (90deg ccw)
@@ -522,3 +524,60 @@ class Car:
     # Metodo para dibujar el carro en su nueva posicion dentro de screen
     def updateGraphic(self):
         pg.draw.circle(self.screen, self.color, (self.posX, self.posY), self.radius)
+
+# Clase para dibujar botones
+# https://www.geeksforgeeks.org/how-to-create-buttons-in-a-game-using-pygame/
+class Button:
+
+    #Metodo constructor
+    def __init__(self, screen, status, pos, width, height, linkedCmdNum, onClick = None, colorOn = (170,170,170), colorOff = (100,100,100), ):
+        self.screen = screen # Se asume screen de pygame
+        self.x, self.y = pos # Se asume que la posicion es entera, positiva, y contenida dentro del screen
+        self.width = width # Se asume que el tamaño es tal que el boton cabe perfectamente dentro del screen
+        self.height = height
+
+        self.colorOn = colorOn
+        self.colorOff = colorOff
+
+        self.onClick = onClick #Se asume que onClick se puede llamar y es el correcto
+
+        self.status = status
+        self.cmdNum = linkedCmdNum
+        self.text = str(linkedCmdNum) + ": " + status.commandsByNum[linkedCmdNum][1]
+
+    def place(self, mousePos):
+        # https://www.geeksforgeeks.org/how-to-create-buttons-in-a-game-using-pygame/
+        # stores the (x,y) coordinates into
+        # the variable as a tuple
+        #mouse = pg.mouse.get_pos()
+
+        # if mouse is hovered on a button it
+        # changes to lighter shade
+        if self.mouseIsOnButton(mousePos):
+            pg.draw.rect(self.screen, self.colorOn, [self.x, self.y, self.width, self.height])
+
+        else:
+            pg.draw.rect(self.screen, self.colorOff, [self.x, self.y, self.width, self.height])
+
+        smallfont = pg.font.SysFont('Calibri',20)
+        text = smallfont.render(self.text , True, (255, 255, 255))
+        # superimposing the text onto our button
+        self.screen.blit(text, (self.x + self.width / 2 - 30, self.y + (self.height - 20) / 2))
+
+    def update(self, mousePos):
+        self.place(mousePos)
+
+        # https://stackoverflow.com/questions/10990137/pygame-mouse-clicking-detection
+        if self.mouseIsOnButton(mousePos) and self.status.clickDetected:
+            self.onClick(self)
+
+
+    def mouseIsOnButton(self, mousePos):
+        insideX = self.x <= mousePos[0] <= self.x + self.width
+        insideY = self.y <= mousePos[1] <= self.y + self.height
+
+        return insideX and insideY
+
+
+
+

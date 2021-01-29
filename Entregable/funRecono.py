@@ -148,20 +148,6 @@ def camera(status):
 
         if ret == True:
             lastCommand = status.nextCommandNum
-            #print("comando desde recono", command)
-
-            if status.sameCommandCount <= status.sameCommandMaxCount:
-                command = recono(frame)[0]
-
-                if command != 0 and command == lastCommand:
-                    if status.carIsRunning:
-                        status.sameCommandCount += 1
-=======
->>>>>>> Stashed changes
-
-
-        if ret == True:
-            lastCommand = status.nextCommandNum
 
             command  = recono(frame)[0]
 

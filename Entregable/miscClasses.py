@@ -29,27 +29,37 @@ class ProgramStatus():
         #5: "Detención"
         #6: "Puesta en marcha"
 
+
         #Numero del comando
         self.nextCommandNum = 0
-
         #Numero del comando activado debido a lecturas consecutivas
         self.activeCommandNum = 0
-
         #Numero del comando anterior
         self.lastCommandNum = 0
+        # Condicion si el comando es activo
+        self.cmdIsActive = False
+
 
         # Conteo de detección consecutiva del mismo comando
         self.sameCommandCount = 0
-
         # Conteo máximo para que un comando se mantenga activo hasta la siguiente intersección
         self.sameCommandMaxCount = 5
+
+
+        # Condicion si se detecto click
+        self.clickDetected = False
+        #Condicion si se mantiene click
+        self.clickHeld = False
+
 
         #Reloj global
         self.clock = None #Tipo pygame.time.Clock
 
+
         #Tiempos usados para comando de detencion
         self.stopTime = 0 #entero, milisegundos
         self.timeLeft = 0 #en segundos
+
 
         #Taza de refrescado
         self.framerate = 60 #frames p sec
@@ -66,7 +76,7 @@ class ProgramStatus():
     def changeNextCmd(self, number):
         # Validacion de number
         if type(number) != int:
-            self.nextCommandNum = 0
+            self.resetCmdNumber()
             return
 
         #Memoria del comando anterior para conteo
@@ -77,14 +87,10 @@ class ProgramStatus():
             self.nextCommandNum = number
 
             if number == self.lastCommandNum:
-                if self.carIsRunning:
-                    self.sameCommandCount += 1
-
-                elif number == 6: # Si el carro esta detenido, solo cuenta los de "puesta en marcha"
-                    self.sameCommandCount += 1
+                self.sameCommandCount += 1
 
             else:
-                self.resetSameCount()
+                self.sameCommandCount = 0
 
             self.changeActiveCmd(number)
 
@@ -94,18 +100,39 @@ class ProgramStatus():
 
     # Metodo para cambiar el comando activo en algunas variables de la instancia
     def changeActiveCmd(self, command):
-        if not self.isCommandActive():
-            self.activeCommandNum = command #No cambia despues de que ha llegado al maximo
+        if not self.cmdIsActive:
+            self.activeCommandNum = command #Se actualiza solo si aun no ha llegado al maximo posible
+
+            if self.isCommandActive():
+                self.cmdIsActive = True
+
+    #Metodo para activacion forzada de un comando, posiblemente por boton
+    def forceActiveCmd(self, command):
+        # Validacion de command
+        if type(command) != int or (command < 0 and command > 6):
+            return
+
+        if 1 <= command <= 6:
+            self.cmdIsActive = True
+            self.activeCommandNum = command
+
+        else:
+            self.resetActiveCmd()
+
 
     # Metodo para reiniciar los atributos relacionados al comando
     def resetCmdNumber(self):
         self.nextCommandNum = 0
-        self.resetSameCount()
-
-    # Metodo para reiniciar los atributos relacionados al comando activo
-    def resetSameCount(self):
         self.sameCommandCount = 0
+
+    # Metodo para reiniciar la bandera de comando activo
+    def resetActiveCmd(self):
+        self.cmdIsActive = False
         self.activeCommandNum = 0
+
+
+
+
 
 
 
